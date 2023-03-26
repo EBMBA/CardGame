@@ -3,12 +3,12 @@ package com.sp.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -20,7 +20,7 @@ public class Card {
 	private Integer cardId;
 
 	private String name;
-	@Size(max = 5000)
+	@Column(length = 50000)
 	private String description;
 	private String imgUrl;
 	private String family;
