@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.sp.model.Card;
+import com.sp.model.Role;
 import com.sp.model.User;
 import com.sp.model.UserDTO;
 import com.sp.repository.UserRepository;
@@ -49,6 +50,10 @@ public class UserManagementService implements UserDetailsService{
         newUser.setName(userDto.getName());
         newUser.setMoney((float) 1000.0); // Default value of the wallet 
 
+        List<Role> authorities = new ArrayList<>();
+        userDto.getRoleList().forEach(role -> authorities.add(new Role(role)));
+        newUser.setRoleList(authorities);
+
         uRepository.save(newUser);
         System.out.println("User created: " + newUser );
         return true;
@@ -66,6 +71,10 @@ public class UserManagementService implements UserDetailsService{
         newUser.setUsername(userDto.getUsername());
         newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
         newUser.setName(userDto.getName());
+
+        List<Role> authorities = new ArrayList<>();
+        userDto.getRoleList().forEach(role -> authorities.add(new Role(role)));
+        newUser.setRoleList(authorities);
 
         uRepository.save(newUser);
         System.out.println("User modified: " + newUser );

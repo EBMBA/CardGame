@@ -1,8 +1,21 @@
+-- Add default Roles
+INSERT INTO ROLE(id,role_name) VALUES(1,'ROLE_ADMIN');
+INSERT INTO ROLE(id,role_name) VALUES(2,'ROLE_USER');
+
 INSERT INTO users (user_id, name, username, password, money) VALUES (1,'joe','jdoe','$2a$10$THBVIv.bLWJ1TaZwCOkkb.OrMFqsN1aB31pi9CUD9yaRmEX/nBPZS', 1065);
 INSERT INTO users (user_id, name, username, password, money) VALUES (2,'antonio','antonio','$2a$10$4NiYt50/N5CzcWh9ipHXPeH5uUPfJrZ2S.gDaczg/XD6Kiq23LpmW', 350);
 INSERT INTO users (user_id, name, username, password, money) VALUES (3,'john','john','$2a$10$l5UJsEqmms73fYt56rvh.OfBDGJmxf7ijVUkf/qPgK8607DFmn/PG', 270);
 INSERT INTO users (user_id, name, username, password, money) VALUES (4,'cassey','cassey','$2a$10$c/8KZnGbjrumOUnaza0qfeFRgseF17WPi9/cJZbDTNryZxS2lMpBq', 961);
 INSERT INTO users (user_id, name, username, password, money) VALUES (5,'toto','toto','$2a$10$6BE/Ft6oXOo9vga3nVHfYeusniZAimVo1sfzwhojDZoihKGmYHlmO', 50);
+
+-- Add default User - Role Association
+INSERT INTO USER_ROLE(USER_id,ROLE_id) VALUES(1,1);
+INSERT INTO USER_ROLE(USER_id,ROLE_id) VALUES(1,2);
+INSERT INTO USER_ROLE(USER_id,ROLE_id) VALUES(2,2);
+INSERT INTO USER_ROLE(USER_id,ROLE_id) VALUES(3,1);
+INSERT INTO USER_ROLE(USER_id,ROLE_id) VALUES(4,1);
+INSERT INTO USER_ROLE(USER_id,ROLE_id) VALUES(5,1);
+
 
 -- select 'ALTER TABLE 'public'.'card' ALTER COLUMN 'description' SET DATA TYPE character varying(4000);' from information_schema.columns where table_schema='public' and data_type='character varying' and character_maximum_length=255;
 

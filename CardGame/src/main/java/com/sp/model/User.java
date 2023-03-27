@@ -1,8 +1,10 @@
 package com.sp.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -14,9 +16,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
@@ -30,6 +34,17 @@ public class User implements Serializable, UserDetails{
     private String name;
     private String password;
     private Float money;
+
+    // @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY,
+    cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE
+    })
+    @JoinTable(name = "USER_ROLE",
+                joinColumns = {@JoinColumn(name= "USER_ID")},
+                inverseJoinColumns = {@JoinColumn(name = "ROLE_ID")})
+    private List<Role> roleList;
 
   @ManyToMany(fetch = FetchType.LAZY,
     cascade = {
@@ -78,7 +93,11 @@ public class User implements Serializable, UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        List<SimpleGrantedAuthority> roleListAuthorities = new ArrayList<>();
+        for (Role role : roleList) {
+            roleListAuthorities.add(new SimpleGrantedAuthority(role.getRoleName()));
+        }
+        return roleListAuthorities;
     }
 
     public Boolean addCard(Card card){
@@ -95,6 +114,14 @@ public class User implements Serializable, UserDetails{
         Float moneyLeft = this.money + card.getPrice();
         this.cards.remove(card);
         this.setMoney(moneyLeft); 
+    }
+
+    public List<Role> getRoleList() {
+        return roleList;
+    }
+
+    public void setRoleList(List<Role> roleList) {
+        this.roleList = roleList;
     }
 
     public Set<Card> getCards(){

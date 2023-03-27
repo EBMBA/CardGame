@@ -1,11 +1,13 @@
 package com.sp.model;
 
+import java.util.List;
+
 public class UserDTO {
     private String username;
     private String name;
     private String password;
     private Float money;
-    private Integer role;
+    private List<String> roleList;
 
     public Float getMoney() {
         return money;
@@ -15,12 +17,12 @@ public class UserDTO {
         this.money = money;
     }
 
-    public Integer getRole() {
-        return role;
+    public List<String> getRoleList() {
+        return roleList;
     }
 
-    public void setRole(Integer role) {
-        this.role = role;
+    public void setRoleList(List<String> roleList) {
+        this.roleList = roleList;
     }
 
     public String getPassword() {
@@ -51,7 +53,7 @@ public class UserDTO {
         builder.append("UserDTO [username=")
                 .append(username)
                 .append(", role=")
-                .append(role)
+                .append(getRoleList())
                 .append(", name=")
                 .append(name)
                 .append(", money=")

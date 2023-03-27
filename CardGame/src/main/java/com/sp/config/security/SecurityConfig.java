@@ -67,7 +67,8 @@ public class SecurityConfig {
         http   
                     .authenticationProvider(getProvider())
                     .authorizeRequests().antMatchers("/login").permitAll()
-                    .antMatchers("/api/**").authenticated()
+                    .antMatchers("/api/cards/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                    .antMatchers("/api/users/**").hasAuthority( "ROLE_ADMIN")
                     .anyRequest().authenticated();
                 
 
