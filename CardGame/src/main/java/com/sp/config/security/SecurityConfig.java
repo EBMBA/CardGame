@@ -1,7 +1,7 @@
 package com.sp.config.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -16,7 +16,6 @@ import com.sp.controller.AppAuthProvider;
 import com.sp.controller.JwtAuthEntryPoint;
 import com.sp.controller.JwtRequestFilter;
 import com.sp.controller.UserManagementService;
-import com.sp.model.User;
 
 @EnableWebSecurity
 public class SecurityConfig {
@@ -67,8 +66,14 @@ public class SecurityConfig {
         http   
                     .authenticationProvider(getProvider())
                     .authorizeRequests().antMatchers("/login").permitAll()
+                    .antMatchers(HttpMethod.POST, "/api/users").permitAll()
+                    .antMatchers(HttpMethod.GET, "/api/users").hasAuthority( "ROLE_ADMIN")
                     .antMatchers("/api/cards/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                    .antMatchers("/api/cards").hasAnyAuthority("ROLE_ADMIN")
                     .antMatchers("/api/users/**").hasAuthority( "ROLE_ADMIN")
+                    .antMatchers("/api/wallets/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                    .antMatchers("/api/inventories/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                    .antMatchers("/api/store/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                     .anyRequest().authenticated();
                 
 

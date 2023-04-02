@@ -1,16 +1,15 @@
 package com.sp.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,10 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.sp.model.Card;
-import com.sp.model.User;
-import com.sp.model.UserDTO;
+import com.sp.model.User.UserDTO;
+import com.sp.model.User.UserRegisterRequest;
 
 @RestController
 @RequestMapping("/api/users")
@@ -32,17 +29,13 @@ public class UserManagementRestCRT {
     @Autowired
     UserManagementService uAuthService;
 
-    @Autowired
-    CardManagementService cardsService;
-
-    @PostMapping(value = {"/"},consumes = "application/json")
+    @PostMapping(value = {""},consumes = "application/json")
     @ResponseBody
-    public ResponseEntity<Object> addUser(@RequestBody UserDTO userDto, HttpServletResponse response) {
+    public ResponseEntity<Object> addUser(@RequestBody UserRegisterRequest user, HttpServletResponse response) {
         Map<String, String> message = new HashMap<>();
         
-        if (uAuthService.addUser(userDto).equals(true)) {
+        if (uAuthService.addUser(user).equals(true)) {
             message.put("Status", "Created");
-
             return ResponseEntity.ok(message);
         }
         message.put("Status", "Username is already taken.");
@@ -53,7 +46,7 @@ public class UserManagementRestCRT {
     @ResponseBody
     public ResponseEntity<Object> getUser(@PathVariable String username,HttpServletRequest request) {
         
-        User user = uAuthService.getUserNoPwd(username);
+        UserDTO user = uAuthService.getUserNoPwd(username);
 
         if (user != null) {
             return ResponseEntity.ok(user);
@@ -62,16 +55,22 @@ public class UserManagementRestCRT {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
     }
 
-    @GetMapping(value = {"/"})
+    @GetMapping(value = {""})
     @ResponseBody
-    public ResponseEntity<Object> getUser(HttpServletRequest request) {
-        return ResponseEntity.ok(uAuthService.getAllUserNoPwd());   
+    public ResponseEntity<Object> getUsers(HttpServletRequest request) {
+        List<UserDTO> users= uAuthService.getAllUserNoPwd();
+
+        if (users == null) {
+            return ResponseEntity.badRequest().body("Error");
+        }
+
+        return ResponseEntity.ok().body(users);   
     }
 
     @PutMapping(value="/{username}")
-	public ResponseEntity<Object> getUser(@PathVariable String username, @RequestBody UserDTO userDto) {
+	public ResponseEntity<Object> setUser(@PathVariable String username, @RequestBody UserRegisterRequest user) {
         
-        if (! uAuthService.setUser(userDto,username)) {
+        if (! uAuthService.setUser(user,username)) {
 		    return ResponseEntity.badRequest().body(null)  ;
         }
 		return ResponseEntity.ok().body(null) ; 

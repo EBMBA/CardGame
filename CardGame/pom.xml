@@ -64,6 +64,14 @@
 			<version>0.9.1</version>
 		</dependency>
 
+		<!-- Never write another getter or equals method again, with one annotation your class has a fully featured builder -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.26</version>
+			<scope>provided</scope>
+		</dependency>
+
 		
 		<!-- <dependency>
       		<groupId>org.springframework.boot</groupId>
