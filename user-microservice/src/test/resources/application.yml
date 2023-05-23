@@ -1,0 +1,29 @@
+server:
+  port: 8097
+WALLET_SERVICE_URL: "http://localhost:8096"
+INVENTORY_SERVICE_URL: "http://localhost:8095"
+
+## FOR EMBEDED DB
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.H2Dialect
+  datasource:
+    username: sa
+    password: password
+  h2:
+    console:
+      enable: true
+
+jdbc:
+  url: jdbc:h2:mem:testdb2;DB_CLOSE_DELAY=-1;NON_KEYWORDS=KEY,VALUE
+  username: sa
+  password: password
+  driver-class-name: org.h2.Driver
+
+hibernate:
+    dialect: org.hibernate.dialect.H2Dialect
+    hbm2ddl:
+      auto: create

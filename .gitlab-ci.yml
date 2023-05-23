@@ -1,0 +1,10 @@
+stages:
+  - test
+  - build
+
+after_script:
+  - date
+
+include:
+  - local: ".gitlab-ci/.jobs-backend.yml"
+  - local: ".gitlab-ci/.common-gitlab-ci.yml"

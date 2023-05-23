@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Play</title>
+    <link rel="stylesheet" type="text/css" href="./lib/Semantic-UI-CSS-master/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="./js/play.js" defer></script>
+</head>
+
+<body>
+    <div class="ui clearing segment">
+        <h3 class="ui right floated header">
+            <i class="user circle outline icon"></i>
+        </h3>
+        <h3 class="ui left floated header">
+            <i class="wait icon"></i>
+            <div class="content">
+                Play
+                <div class="sub header">Waiting room</div>
+            </div>
+
+        </h3>
+    </div>
+
+    <h1>Vérification du statut de jeu</h1>
+    <p id="status">En attente du statut de jeu...</p>
+
+
+    <script>
+        window.onbeforeunload = function () {
+            document.cookie = "room_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        };
+
+        $(document).ready(function () {
+            setInterval(checkGameStatus, 10000);
+        });
+
+        function checkGameStatus() {
+            $.ajax({
+                url: "http://127.0.0.1.nip.io/api/game/room/" + getCookieValue("room_name"),
+                headers: {
+                    // header authorization pour récupérer un cookie appelé jwttoken
+                        "Authorization": "Bearer " + getCookieValue("jwttoken"),
+                        "Access-Control-Allow-Origin": "*"
+                    },
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    if (response.status === "PLAY") {
+                        window.location.href = "game-play-room.html";
+                    } else {
+                        $("#status").text("Le statut de jeu pour la room" + " " + getCookieValue("room_name") + " :" + response.status);
+                    }
+                },
+                error: function (error) {
+                    console.log("Erreur lors de la requête GET:", error);
+                }
+            });
+        }
+
+    </script>
+
+</body>

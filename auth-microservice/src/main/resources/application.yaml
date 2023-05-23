@@ -1,0 +1,21 @@
+server:
+  port: ${AUTH_MICROSERVICE_PORT}
+
+
+ # JWT secret for token signature
+jwt:
+  secret: this_is_jwt_server_secret
+
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.H2Dialect
+  datasource:
+    username: sa
+    password: password
+  h2:
+    console:
+      enable: true

@@ -1,0 +1,115 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: cors-header
+  namespace: card-game
+  labels:
+    app: card-game
+spec:
+  headers:
+    customResponseHeaders:
+      Access-Control-Allow-Origin: "*"
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: jwtauth
+  namespace: card-game
+  labels:
+    app: card-game
+spec:
+  forwardAuth:
+    address: http://10.10.0.11.nip.io/api/auth/validate
+    trustForwardHeader: true
+    authResponseHeaders: 
+    - X-Forwarded-User
+    authRequestHeaders: 
+    - Authorization
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: card-game-microservices-ingress-route
+  namespace: card-game
+  labels:
+    app: card-game
+spec:
+  entryPoints:
+  - web
+  routes:
+  - match: (Host(`192.168.1.155.nip.io`) || Host(`10.10.0.11.nip.io`)) && PathPrefix(`/api/cards`)
+    kind: Rule
+    services:
+    - name: card-microservice-service
+      port: 8085
+    middlewares:
+    - name: cors-header
+      namespace: card-game
+    - name: jwtauth
+      namespace: card-game
+  - match: (Host(`192.168.1.155.nip.io`) || Host(`10.10.0.11.nip.io`)) && PathPrefix(`/api/users`)
+    kind: Rule
+    services:
+    - name: user-microservice-service
+      port: 8088
+    middlewares:
+    - name: cors-header
+      namespace: card-game
+    - name: jwtauth
+      namespace: card-game
+  - match: (Host(`192.168.1.155.nip.io`) || Host(`10.10.0.11.nip.io`)) && PathPrefix(`/api/wallets`)
+    kind: Rule
+    services:
+    - name: wallet-microservice-service
+      port: 8080
+    middlewares:
+    - name: cors-header
+      namespace: card-game
+    - name: jwtauth
+      namespace: card-game
+  - match: (Host(`192.168.1.155.nip.io`) || Host(`10.10.0.11.nip.io`)) && PathPrefix(`/api/inventories`)
+    kind: Rule
+    services:
+    - name: inventory-microservice-service
+      port: 8084
+    middlewares:
+    - name: cors-header
+      namespace: card-game
+    - name: jwtauth
+      namespace: card-game
+  - match: (Host(`192.168.1.155.nip.io`) || Host(`10.10.0.11.nip.io`)) && PathPrefix(`/api/store`)
+    kind: Rule
+    services:
+    - name: store-microservice-service
+      port: 8082
+    middlewares:
+    - name: cors-header
+      namespace: card-game
+    - name: jwtauth
+      namespace: card-game
+  - match: (Host(`192.168.1.155.nip.io`) || Host(`10.10.0.11.nip.io`)) && PathPrefix(`/api/auth`)
+    kind: Rule
+    services:
+    - name: auth-microservice-service
+      port: 8086
+    middlewares:
+    - name: cors-header
+      namespace: card-game
+  - match: (Host(`192.168.1.155.nip.io`) || Host(`10.10.0.11.nip.io`)) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: frontend-microservice-service
+      port: 8000
+    middlewares:
+    - name: cors-header
+      namespace: card-game
+  - match: (Host(`192.168.1.155.nip.io`) || Host(`10.10.0.11.nip.io`)) && PathPrefix(`/api/game`)
+    kind: Rule
+    services:
+    - name: game-microservice-service
+      port: 8083
+    middlewares:
+    - name: cors-header
+      namespace: card-game
+    - name: jwtauth
+      namespace: card-game

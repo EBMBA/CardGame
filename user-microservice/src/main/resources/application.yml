@@ -1,0 +1,16 @@
+server:
+  port: ${USER_MICROSERVICE_PORT}
+
+## FOR EMBEDED DB
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.H2Dialect
+  datasource:
+    username: sa
+    password: password
+  h2:
+    console:
+      enable: true

@@ -1,0 +1,17 @@
+server:
+  port: ${WALLET_MICROSERVICE_PORT}
+USER_SERVICE_URL: ${USER_MICROSERVICE_URL}
+
+## FOR EMBEDED DB
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.H2Dialect
+  datasource:
+    username: sa
+    password: password
+  h2:
+    console:
+      enable: true

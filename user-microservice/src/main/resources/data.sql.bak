@@ -1,0 +1,8 @@
+-- Add default Users
+-- INSERT INTO users (user_id, name, username) VALUES (1,'joe','jdoe');
+
+-- INSERT INTO users (user_id, name, username, password) VALUES (1,'joe','jdoe','$2a$10$THBVIv.bLWJ1TaZwCOkkb.OrMFqsN1aB31pi9CUD9yaRmEX/nBPZS');
+-- INSERT INTO users (user_id, name, username, password) VALUES (2,'antonio','antonio','$2a$10$4NiYt50/N5CzcWh9ipHXPeH5uUPfJrZ2S.gDaczg/XD6Kiq23LpmW');
+-- INSERT INTO users (user_id, name, username, password) VALUES (3,'john','john','$2a$10$l5UJsEqmms73fYt56rvh.OfBDGJmxf7ijVUkf/qPgK8607DFmn/PG');
+-- INSERT INTO users (user_id, name, username, password) VALUES (4,'cassey','cassey','$2a$10$c/8KZnGbjrumOUnaza0qfeFRgseF17WPi9/cJZbDTNryZxS2lMpBq');
+-- INSERT INTO users (user_id, name, username, password) VALUES (5,'toto','toto','$2a$10$6BE/Ft6oXOo9vga3nVHfYeusniZAimVo1sfzwhojDZoihKGmYHlmO');

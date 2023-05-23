@@ -1,0 +1,2 @@
+server:
+  port: ${STORE_MICROSERVICE_PORT}

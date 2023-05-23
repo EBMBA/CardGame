@@ -1,0 +1,406 @@
+# deployment kubernetes for card game
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: card-microservice-deployment
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: card
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: card-game
+      microservice: card
+  template:
+    metadata:
+      labels:
+        app: card-game
+        microservice: card
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: card-microservice
+        image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:CARD
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8085
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: card-microservice-service
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: card
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8085
+    targetPort: 8085
+  selector:
+    app: card-game
+    microservice: card
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallet-microservice-deployment
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: wallet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: card-game
+      microservice: wallet
+  template:
+    metadata:
+      labels:
+        app: card-game
+        microservice: wallet
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: wallet-microservice
+        image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:WALLET
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: USER_SERVICE_URL
+          value: "http://user-microservice-service:8088/api/users"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-microservice-service
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: wallet 
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: card-game
+    microservice: wallet
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-microservice-deployment
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: card-game
+      microservice: user
+  template:
+    metadata:
+      labels:
+        app: card-game
+        microservice: user
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: user-microservice
+        image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:USER
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8087
+        env:
+        - name: WALLET_SERVICE_URL
+          value: "http://wallet-microservice-service:8080/api/wallets"
+        - name: INVENTORY_SERVICE_URL
+          value: "http://inventory-microservice-service:8084/api/inventories"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-microservice-service
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: user
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8088
+    targetPort: 8087
+  selector:
+    app: card-game
+    microservice: user
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-microservice-deployment
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: card-game
+      microservice: auth
+  template:
+    metadata:
+      labels:
+        app: card-game
+        microservice: auth
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: auth-microservice
+        image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:AUTH
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8086
+        env:
+        - name: USER_SERVICE_URL
+          value: "http://user-microservice-service:8088/api/users"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-microservice-service
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: auth
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8086
+    targetPort: 8086
+  selector:
+    app: card-game
+    microservice: auth
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-microservice-deployment
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: store
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: card-game
+      microservice: store
+  template:
+    metadata:
+      labels:
+        app: card-game
+        microservice: store
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: store-microservice
+        image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:STORE
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8082
+        env:
+        - name: USER_SERVICE_URL
+          value: "http://user-microservice-service:8088/api/users"
+        - name: INVENTORY_SERVICE_URL
+          value: "http://inventory-microservice-service:8084/api/inventories"
+        - name: WALLET_SERVICE_URL
+          value: "http://wallet-microservice-service:8080/api/wallets"
+        - name: CARD_SERVICE_URL
+          value: "http://card-microservice-service:8085/api/cards"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: store-microservice-service
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: store
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8082
+    targetPort: 8082
+  selector:
+    app: card-game
+    microservice: store
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-microservice-deployment
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: inventory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: card-game
+      microservice: inventory
+  template:
+    metadata:
+      labels:
+        app: card-game
+        microservice: inventory
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: inventory-microservice
+        image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:INVENTORY
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8084
+        env:
+        - name: USER_SERVICE_URL
+          value: "http://user-microservice-service:8088/api/users"
+        - name: CARD_SERVICE_URL
+          value: "http://card-microservice-service:8085/api/cards"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-microservice-service
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: inventory
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8084
+    targetPort: 8084
+  selector:
+    app: card-game
+    microservice: inventory
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-microservice-deployment
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: game
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: card-game
+      microservice: game
+  template:
+    metadata:
+      labels:
+        app: card-game
+        microservice: game
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: game-microservice
+        image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:GAME
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8083
+        env:
+        - name: USER_SERVICE_URL
+          value: "http://user-microservice-service:8088/api/users"
+        - name: CARD_SERVICE_URL
+          value: "http://card-microservice-service:8085/api/cards"
+        - name: STORE_SERVICE_URL
+          value: "http://store-microservice-service:8082/api/stores"
+        - name: INVENTORY_SERVICE_URL
+          value: "http://inventory-microservice-service:8084/api/inventories"
+        - name: WALLET_SERVICE_URL
+          value: "http://wallet-microservice-service:8080/api/wallets"
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-microservice-service:8086/api/auth"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-microservice-service
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: game
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8083
+    targetPort: 8083
+  selector:
+    app: card-game
+    microservice: game
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-microservice-deployment
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: card-game
+      microservice: frontend
+  template:
+    metadata:
+      labels:
+        app: card-game
+        microservice: frontend
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: frontend-microservice
+        image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:FRONT
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-microservice-service
+  namespace: card-game
+  labels:
+    app: card-game
+    microservice: frontend
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: 80
+  selector:
+    app: card-game
+    microservice: frontend

@@ -1,0 +1,15 @@
+server:
+  port: ${GAME_MICROSERVICE_PORT}
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.H2Dialect
+  datasource:
+    username: sa
+    password: password
+  h2:
+    console:
+      enable: true

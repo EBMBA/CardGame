@@ -1,0 +1,183 @@
+version: "3.1"
+services:
+  wallet-microservice:
+    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:WALLET
+    # build: 
+    #   dockerfile: ./wallet-microservice/Dockerfile
+    #   context: .
+    restart: always
+    ports:
+      - 8080:8080
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.wallet-microservice.rule= (Host(`localhost`) || Host(`127.0.0.1.nip.io`)) && PathPrefix(`/api/wallets`)"
+    - "traefik.http.services.wallet-microservice.loadbalancer.server.port=8080"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.address=http://auth-microservice:8086/api/auth/validate"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.trustforwardheader=true"
+    # - "traefik.http.middlewares.jwtAuth.forwardauth.authResponseHeaders=X-Forwarded-User"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.authRequestHeaders=Authorization"
+    - "traefik.http.routers.wallet-microservice.middlewares=jwtAuth@docker"
+    -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
+    environment:
+      USER_SERVICE_URL: http://user-microservice:8087/api/users
+  user-microservice:
+    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:USER
+    # build: 
+    #   dockerfile: ./user-microservice/Dockerfile
+    #   context: .
+    restart: always
+    ports:
+      - 8087:8087
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.user-microservice.rule=(Host(`localhost`) || Host(`127.0.0.1.nip.io`)) && PathPrefix(`/api/users`)"
+    - "traefik.http.services.user-microservice.loadbalancer.server.port=8087"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.address=http://auth-microservice:8086/api/auth/validate"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.trustforwardheader=true"
+    # - "traefik.http.middlewares.jwtAuth.forwardauth.authResponseHeaders=X-Forwarded-User"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.authRequestHeaders=Authorization"
+    - "traefik.http.routers.user-microservice.middlewares=jwtAuth@docker"
+    -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
+    environment:
+      WALLET_SERVICE_URL: http://wallet-microservice:8080/api/wallets
+      INVENTORY_SERVICE_URL: http://inventory-microservice:8084/api/inventories
+  card-microservice:
+    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:CARD
+    # build: 
+    #   dockerfile: ./card-microservice/Dockerfile
+    #   context: .
+    restart: always
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.card-microservice.rule=(Host(`localhost`) || Host(`127.0.0.1.nip.io`)) && PathPrefix(`/api/cards`)"
+    - "traefik.http.services.card-microservice.loadbalancer.server.port=8085"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.address=http://auth-microservice:8086/api/auth/validate"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.trustforwardheader=true"
+    # - "traefik.http.middlewares.jwtAuth.forwardauth.authResponseHeaders=X-Forwarded-User"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.authRequestHeaders=Authorization"
+    - "traefik.http.routers.card-microservice.middlewares=jwtAuth@docker"
+    -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
+    ports:
+      - 8085:8085
+  auth-microservice:
+    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:AUTH
+    # build:
+    #   dockerfile : ./auth-microservice/Dockerfile
+    #   context: .
+    restart: always
+    ports:
+      - 8086:8086
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.auth-microservice.rule=(Host(`localhost`) || Host(`127.0.0.1.nip.io`)) && PathPrefix(`/api/auth`)"
+    - "traefik.http.services.auth-microservice.loadbalancer.server.port=8086"
+    environment:
+      USER_SERVICE_URL: http://user-microservice:8087/api/users
+  inventory-microservice:
+    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:INVENTORY
+    # build: 
+    #   dockerfile: ./inventory-microservice/Dockerfile
+    #   context: .
+    restart: always
+    ports:
+      - 8084:8084
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.inventory-microservice.rule=(Host(`localhost`) || Host(`127.0.0.1.nip.io`)) && PathPrefix(`/api/inventories`)"
+    - "traefik.http.services.inventory-microservice.loadbalancer.server.port=8084"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.address=http://auth-microservice:8086/api/auth/validate"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.trustforwardheader=true"
+    # - "traefik.http.middlewares.jwtAuth.forwardauth.authResponseHeaders=X-Forwarded-User"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.authRequestHeaders=Authorization"
+    - "traefik.http.routers.inventory-microservice.middlewares=jwtAuth@docker"
+    -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
+    environment:
+      USER_SERVICE_URL: http://user-microservice:8087/api/users
+      CARD_SERVICE_URL: http://card-microservice:8085/api/cards
+  store-microservice:
+    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:STORE
+    # build:
+    #   dockerfile: ./store-microservice/Dockerfile
+    #   context: .
+    restart: always
+    ports:
+      - 8082:8082
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.store-microservice.rule=(Host(`localhost`) || Host(`127.0.0.1.nip.io`)) && PathPrefix(`/api/store`)"
+    - "traefik.http.services.store-microservice.loadbalancer.server.port=8082"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.address=http://auth-microservice:8086/api/auth/validate"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.trustforwardheader=true"
+    # - "traefik.http.middlewares.jwtAuth.forwardauth.authResponseHeaders=X-Forwarded-User"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.authRequestHeaders=Authorization"
+    - "traefik.http.routers.store-microservice.middlewares=jwtAuth@docker"
+    -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
+    environment:
+      USER_SERVICE_URL: http://user-microservice:8087/api/users
+      INVENTORY_SERVICE_URL: http://inventory-microservice:8084/api/inventories
+      WALLET_SERVICE_URL: http://wallet-microservice:8080/api/wallets
+      CARD_SERVICE_URL: http://card-microservice:8085/api/cards
+
+  frontend:
+    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:FRONT
+    # build: 
+    #   dockerfile: ./frontend/Dockerfile
+    #   context: .
+    restart: always
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.frontend.rule=Host(`127.0.0.1.nip.io`)"
+    - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
+
+  game-microservice:
+    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:GAME
+    # build:
+    #   dockerfile: ./game-microservice/Dockerfile
+    #   context: .
+    restart: always
+    ports:
+      - 8083:8083
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.game-microservice.rule=(Host(`localhost`) || Host(`127.0.0.1.nip.io`)) && PathPrefix(`/api/game`)"
+    - "traefik.http.services.game-microservice.loadbalancer.server.port=8083"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.address=http://auth-microservice:8086/api/auth/validate"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.trustforwardheader=true"
+    # - "traefik.http.middlewares.jwtAuth.forwardauth.authResponseHeaders=X-Forwarded-User"
+    - "traefik.http.middlewares.jwtAuth.forwardauth.authRequestHeaders=Authorization"
+    - "traefik.http.routers.game-microservice.middlewares=jwtAuth@docker"
+    -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
+    environment:
+      USER_SERVICE_URL: http://user-microservice:8087/api/users
+      INVENTORY_SERVICE_URL: http://inventory-microservice:8084/api/inventories
+      WALLET_SERVICE_URL: http://wallet-microservice:8080/api/wallets
+      CARD_SERVICE_URL: http://card-microservice:8085/api/cards
+      STORE_SERVICE_URL: http://store-microservice:8082/api/store
+      AUTH_SERVICE_URL: http://auth-microservice:8086/api/auth
+
+  reverse-proxy:
+    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3/traefik:v2.10
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    labels:
+    -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
+    ports:
+      - "80:80"
+      - "8090:8080"
+    links:
+      - wallet-microservice
+      - user-microservice
+      - card-microservice
+      - auth-microservice
+      - inventory-microservice
+      - store-microservice
+      - game-microservice
+      - frontend
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
