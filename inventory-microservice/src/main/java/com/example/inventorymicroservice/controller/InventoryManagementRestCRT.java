@@ -60,14 +60,14 @@ public class InventoryManagementRestCRT {
         }else if (inventoryOperationRequest.getTransaction() == InventoryTransactionType.DELETE){
             inventory = inventoryManagementService.removeFromUserInventory(Integer.valueOf(user_id), inventoryOperationRequest.getCard_id());
         }
-        return inventory ? ResponseEntity.status(HttpStatus.ACCEPTED).body(null) : ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+        return Boolean.TRUE.equals(inventory) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(null) : ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
     }
 
     @DeleteMapping(value = "/{user_id}")
     @ResponseBody
     public ResponseEntity<Object> delete(@PathVariable String user_id, HttpServletResponse response){
         Boolean isDeleted = inventoryManagementService.deleteInventory(Integer.valueOf(user_id));
-        return isDeleted ? ResponseEntity.status(HttpStatus.ACCEPTED).body(null) : ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+        return Boolean.TRUE.equals(isDeleted) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(null) : ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
     }
 
 }
