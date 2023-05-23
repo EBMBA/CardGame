@@ -37,7 +37,7 @@ import com.example.storemicroservice.controller.StoreService;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(StoreService.class)
-public class StoreServiceTest {
+class StoreServiceTest {
     // private static final String WALLET_SERVICE_URL = "http://localhost:8080/wallet";
     // private static final String INVENTORY_SERVICE_URL = "http://localhost:8080/inventory";
     // private static final String USER_SERVICE_URL = "http://localhost:8080/user";
@@ -90,7 +90,7 @@ public class StoreServiceTest {
     }
 
     @Test
-    public void testDoTransactionCard_UserNotFound_ReturnsFalse() throws RestClientException, URISyntaxException {
+    void testDoTransactionCard_UserNotFound_ReturnsFalse() throws RestClientException, URISyntaxException {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1", "1", TransactionType.BUY);
 
 
@@ -105,7 +105,7 @@ public class StoreServiceTest {
     }
 
     @Test
-    public void testDoTransactionCard_CardNotFound_ReturnsFalse() throws RestClientException, URISyntaxException {
+    void testDoTransactionCard_CardNotFound_ReturnsFalse() throws RestClientException, URISyntaxException {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1", "1", TransactionType.BUY);
     
         when(cardAPI.getCard(Mockito.any(Integer.class))).thenReturn(null);
@@ -119,7 +119,7 @@ public class StoreServiceTest {
     }
 
     @Test
-    public void testDoTransactionCard_UserHasNotEnoughMoney_ReturnsFalse() throws RestClientException, URISyntaxException {
+    void testDoTransactionCard_UserHasNotEnoughMoney_ReturnsFalse() throws RestClientException, URISyntaxException {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1", "1", TransactionType.BUY);
         expectedCardDTO.setPrice(1000000.0f);
         when(cardAPI.getCard(Mockito.any(Integer.class))).thenReturn(expectedCardDTO);
@@ -134,7 +134,7 @@ public class StoreServiceTest {
     }
 
     @Test
-    public void testDoTransactionCard_UserHasEnoughMoney_UserHasCard_ReturnsFalse() throws RestClientException, URISyntaxException {
+    void testDoTransactionCard_UserHasEnoughMoney_UserHasCard_ReturnsFalse() throws RestClientException, URISyntaxException {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1", "1", TransactionType.BUY);
         when(cardAPI.getCard(Mockito.any(Integer.class))).thenReturn(expectedCardDTO);
         when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(expectedUserDTO);
@@ -147,7 +147,7 @@ public class StoreServiceTest {
     }
 
     @Test
-    public void testDoTransactionCard_UserHasEnoughMoney_UserHasNotCard_ReturnsTrue() throws RestClientException, URISyntaxException {
+    void testDoTransactionCard_UserHasEnoughMoney_UserHasNotCard_ReturnsTrue() throws RestClientException, URISyntaxException {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1", "1", TransactionType.BUY);
         when(cardAPI.getCard(Mockito.any(Integer.class))).thenReturn(expectedCardDTO);
         when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(expectedUserDTO);

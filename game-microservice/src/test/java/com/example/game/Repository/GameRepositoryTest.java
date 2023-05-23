@@ -11,7 +11,7 @@ import com.example.game.model.Game;
 import com.example.game.repository.GameRepository;
 
 @DataJpaTest
-public class GameRepositoryTest {
+class GameRepositoryTest {
     @Autowired
     GameRepository gRepository;
 
@@ -21,7 +21,7 @@ public class GameRepositoryTest {
     }
 
     @Test
-    public void testFindByName() {
+    void testFindByName() {
         Game game = new Game();
         game.setId(1);
         game.setName("game1");
@@ -39,7 +39,7 @@ public class GameRepositoryTest {
     }
 
     @Test
-    public void testFindByNameNull() {
+    void testFindByNameNull() {
         Game game = new Game();
         game.setId(1);
         game.setName("Test Game");

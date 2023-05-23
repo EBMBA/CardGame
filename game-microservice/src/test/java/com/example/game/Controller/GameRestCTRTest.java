@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(GameRestCRT.class)
-public class GameRestCTRTest {
+class GameRestCTRTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -51,7 +51,7 @@ public class GameRestCTRTest {
 
     // test createRoom
     @Test
-    public void testCreateRoom() throws Exception {
+    void testCreateRoom() throws Exception {
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("room_name", "Test Room");
         requestBody.put("mise", "100");
@@ -69,7 +69,7 @@ public class GameRestCTRTest {
     }
 
     @Test
-    public void testCreateRoom_RoomAlreadyExists() throws Exception {
+    void testCreateRoom_RoomAlreadyExists() throws Exception {
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("room_name", "Test Room");
         requestBody.put("mise", "100");
@@ -88,7 +88,7 @@ public class GameRestCTRTest {
 
     // test getRooms
     @Test
-    public void testGetRooms() throws Exception {
+    void testGetRooms() throws Exception {
         GameDTO room = new GameDTO();
         room.setName("room1");
         GameDTO room2 = new GameDTO();
@@ -110,7 +110,7 @@ public class GameRestCTRTest {
     }
 
     @Test
-    public void testGetRooms_noRooms() throws Exception {
+    void testGetRooms_noRooms() throws Exception {
         when(gameService.getRooms()).thenReturn(null);
         
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/game/rooms");
@@ -123,7 +123,7 @@ public class GameRestCTRTest {
 
     // test joinRoom
     @Test
-    public void testJoinRoom() throws Exception {
+    void testJoinRoom() throws Exception {
         String roomName = "Room 1";
         String jwtToken = "mockToken";
 
@@ -139,7 +139,7 @@ public class GameRestCTRTest {
     }
 
     @Test
-    public void testJoinRoom_RoomNotFoundOrAlreadyPlaying() throws Exception {
+    void testJoinRoom_RoomNotFoundOrAlreadyPlaying() throws Exception {
         String roomName = "NonExistingRoom";
         String jwtToken = "mockToken";
        
@@ -157,7 +157,7 @@ public class GameRestCTRTest {
     
     // test updateRoom
     @Test
-    public void testUpdateRoom_Success() throws Exception {
+    void testUpdateRoom_Success() throws Exception {
         String roomName = "mockRoom";
         String jwtToken = "mockToken";
         int cardId = 123;
@@ -176,7 +176,7 @@ public class GameRestCTRTest {
     }
 
     @Test
-    public void testUpdateRoom_ErrorUpdatingRoom() throws Exception {
+    void testUpdateRoom_ErrorUpdatingRoom() throws Exception {
         // Arrange
         String roomName = "exampleRoom";
         String jwtToken = "exampleToken";
@@ -197,7 +197,7 @@ public class GameRestCTRTest {
 
     // test getRoom
     @Test
-    public void testGetRoom_Success() throws Exception {
+    void testGetRoom_Success() throws Exception {
         // Arrange
         String roomName = "exampleRoom";
         GameDTO room = new GameDTO();
@@ -215,7 +215,7 @@ public class GameRestCTRTest {
     }
 
     @Test
-    public void testGetRoom_RoomNotFound() throws Exception {
+    void testGetRoom_RoomNotFound() throws Exception {
         // Arrange
         String roomName = "nonExistentRoom";
         when(gameService.getRoom(roomName)).thenReturn(null);

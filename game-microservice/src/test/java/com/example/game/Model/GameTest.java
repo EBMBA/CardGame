@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import com.example.game.model.Game;
 
-public class GameTest {
+class GameTest {
     private Game game;
 
     @BeforeEach
@@ -15,7 +15,7 @@ public class GameTest {
     }
 
     @Test
-    public void testGameInitialization() {
+    void testGameInitialization() {
         Assertions.assertNull(game.getId());
         Assertions.assertNull(game.getName());
         Assertions.assertNull(game.getMise());
@@ -28,7 +28,7 @@ public class GameTest {
     }
 
     @Test
-    public void testGameSetterGetter() {
+    void testGameSetterGetter() {
         game.setId(1);
         game.setName("Test Game");
         game.setMise(100);

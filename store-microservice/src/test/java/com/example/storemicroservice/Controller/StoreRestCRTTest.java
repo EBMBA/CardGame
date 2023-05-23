@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(StoreRestCRT.class)
-public class StoreRestCRTTest {
+class StoreRestCRTTest {
     @MockBean
     private StoreService storeService;
 
@@ -48,7 +48,7 @@ public class StoreRestCRTTest {
     }
 
     @Test
-    public void testTransaction_Success_ReturnsOkStatus() throws Exception {
+    void testTransaction_Success_ReturnsOkStatus() throws Exception {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1","1", TransactionType.BUY);
 
         when(storeService.doTransactionCard(Mockito.any(StoreOperationRequest.class))).thenReturn(true);
@@ -65,7 +65,7 @@ public class StoreRestCRTTest {
     }
 
     @Test
-    public void testTransaction_Failure_ReturnsBadRequestStatus() throws Exception {
+    void testTransaction_Failure_ReturnsBadRequestStatus() throws Exception {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1","1", TransactionType.BUY);
 
         when(storeService.doTransactionCard(Mockito.any(StoreOperationRequest.class))).thenReturn(false);

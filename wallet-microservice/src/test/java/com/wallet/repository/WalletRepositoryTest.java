@@ -16,7 +16,7 @@ import com.wallet.repository.WalletRepository;
 
 
 @DataJpaTest
-public class WalletRepositoryTest {
+class WalletRepositoryTest {
     @Autowired
     WalletRepository wRepository ;
 
@@ -26,7 +26,7 @@ public class WalletRepositoryTest {
     }
 
     @Test
-    public void testFindByUserId() {
+    void testFindByUserId() {
         Wallet wallet = new Wallet(1, 1000f, 1);
         wRepository.save(wallet);
         Wallet walletE = wRepository.findByUserId(1);
@@ -34,7 +34,7 @@ public class WalletRepositoryTest {
     }
    
     @Test
-    public void testFindByUserIdNull() {
+    void testFindByUserIdNull() {
         Wallet wallet = new Wallet(1, 1000f, 1);
         wRepository.save(wallet);
         Wallet walletE = wRepository.findByUserId(2);
@@ -42,7 +42,7 @@ public class WalletRepositoryTest {
     }
 
     @Test
-    public void saveWallet() {
+    void saveWallet() {
         Wallet wallet = new Wallet(2, 2000f, 2);
         wRepository.save(wallet);
         assert(wRepository.findByUserId(2).getMoney() == 2000f);

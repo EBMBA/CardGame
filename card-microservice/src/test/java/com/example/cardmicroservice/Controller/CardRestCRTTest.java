@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(CardManagementRestCrt.class)
-public class CardRestCRTTest {
+class CardRestCRTTest {
 
     @MockBean
     private CardManagementService cardService;
@@ -59,7 +59,7 @@ public class CardRestCRTTest {
     }
 
     @Test
-    public void testGetCards() throws Exception {
+    void testGetCards() throws Exception {
         List<CardDTO> cardDTOList = new ArrayList<>();
         cardDTOList.add(newCardDTO);
         cardDTOList.add(newCardDTO);
@@ -75,7 +75,7 @@ public class CardRestCRTTest {
     }
 
     @Test
-    public void testGetCardById_ValidId_Success() throws Exception {
+    void testGetCardById_ValidId_Success() throws Exception {
         when(cardService.getCardByIdDTO(1)).thenReturn(newCardDTO);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/cards/1")
@@ -87,7 +87,7 @@ public class CardRestCRTTest {
     }
 
     @Test
-    public void testGetCardById_InvalidId_NotFound() throws Exception {
+    void testGetCardById_InvalidId_NotFound() throws Exception {
         int id = 2;
         when(cardService.getCardByIdDTO(id)).thenReturn(null);
 
@@ -100,7 +100,7 @@ public class CardRestCRTTest {
     }
 
     @Test
-    public void testAddCard_ValidCard_Success() throws Exception {
+    void testAddCard_ValidCard_Success() throws Exception {
         when(cardService.addCard(Mockito.any())).thenReturn(true);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/cards")
@@ -113,7 +113,7 @@ public class CardRestCRTTest {
     }
 
     @Test
-    public void testAddCard_InvalidCard_BadRequest() throws Exception {
+    void testAddCard_InvalidCard_BadRequest() throws Exception {
         CardDTO cardDTO = new CardDTO();
 
         when(cardService.addCard(cardDTO)).thenReturn(false);
@@ -128,7 +128,7 @@ public class CardRestCRTTest {
     }
 
     @Test
-    public void testGetRandomCard() throws Exception {
+    void testGetRandomCard() throws Exception {
         int id = 1;
 
         when(cardService.getRandomCard()).thenReturn(id);
@@ -143,7 +143,7 @@ public class CardRestCRTTest {
     }
 
     @Test
-    public void testUpdateCard_ValidCard_Success() throws Exception {
+    void testUpdateCard_ValidCard_Success() throws Exception {
         int cardId = 1;
 
         when(cardService.updateCard(Mockito.anyInt(), Mockito.any())).thenReturn(true);
@@ -159,7 +159,7 @@ public class CardRestCRTTest {
     }
 
     @Test
-    public void testUpdateCard_InvalidCard_NotModified() throws Exception {
+    void testUpdateCard_InvalidCard_NotModified() throws Exception {
         int cardId = 1;
         CardDTO cardDTO = new CardDTO();
 
@@ -175,7 +175,7 @@ public class CardRestCRTTest {
     }
 
     @Test
-    public void testDeleteCard_ValidId_Success() throws Exception {
+    void testDeleteCard_ValidId_Success() throws Exception {
         int cardId = 1;
 
         when(cardService.deleteCard(cardId)).thenReturn(true);
@@ -189,7 +189,7 @@ public class CardRestCRTTest {
     }
 
     @Test
-    public void testDeleteCard_InvalidId_NotModified() throws Exception {
+    void testDeleteCard_InvalidId_NotModified() throws Exception {
         int cardId = 1;
 
         when(cardService.deleteCard(cardId)).thenReturn(false);

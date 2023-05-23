@@ -37,7 +37,7 @@ import com.wallet.repository.WalletRepository;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(WalletManagementRestCrt.class)
-public class WalletManagementRestCrtTest {
+class WalletManagementRestCrtTest {
     @Autowired 
     private MockMvc mvc;
 
@@ -61,7 +61,7 @@ public class WalletManagementRestCrtTest {
 
 
     @Test
-    public void testGetWallet() throws Exception {
+    void testGetWallet() throws Exception {
 
         when(wService.getWallet(1)).thenReturn(walletDTO);
         RequestBuilder request = MockMvcRequestBuilders.get("/api/wallets/1").accept(MediaType.APPLICATION_JSON);
@@ -74,7 +74,7 @@ public class WalletManagementRestCrtTest {
     }
 
     @Test
-    public void testDoTransaction_RequestAccepted() throws Exception {
+    void testDoTransaction_RequestAccepted() throws Exception {
         WalletTransactionRequest transactionRequest = new WalletTransactionRequest(100.0f);
         String userId = "1";
 
@@ -94,7 +94,7 @@ public class WalletManagementRestCrtTest {
     }
 
     @Test
-    public void testDoTransaction_RequestNotModified() throws Exception {
+    void testDoTransaction_RequestNotModified() throws Exception {
         String userId = "1";
         WalletTransactionRequest transactionRequest = new WalletTransactionRequest(100.0f);
 

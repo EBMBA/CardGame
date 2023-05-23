@@ -12,7 +12,7 @@ import com.example.inventorymicroservice.model.Inventory;
 import com.example.inventorymicroservice.repository.InventoryRepository;
 
 @DataJpaTest
-public class InventoryRepositoryTest {
+class InventoryRepositoryTest {
     @Autowired
     InventoryRepository iRepository;
 
@@ -22,7 +22,7 @@ public class InventoryRepositoryTest {
     }
 
     @Test
-    public void testFindByUserId() {
+    void testFindByUserId() {
         Set<Integer> cardsId = new HashSet<Integer>();
         Inventory inventory = new Inventory(1, 1, cardsId);
         iRepository.save(inventory);
@@ -32,7 +32,7 @@ public class InventoryRepositoryTest {
     }
 
     @Test
-    public void testFindByUserIdNull() {
+    void testFindByUserIdNull() {
         Set<Integer> cardsId = new HashSet<Integer>();
         Inventory inventory = new Inventory(1, 1, cardsId);
         iRepository.save(inventory);
@@ -41,7 +41,7 @@ public class InventoryRepositoryTest {
     }
 
     @Test
-    public void saveInventory() {
+    void saveInventory() {
         Set<Integer> cardsId = new HashSet<Integer>();
         Inventory inventory = new Inventory(2, 2, cardsId);
         iRepository.save(inventory);
@@ -49,7 +49,7 @@ public class InventoryRepositoryTest {
     }
 
     @Test
-    public void testExistsByUserId() {
+    void testExistsByUserId() {
         Set<Integer> cardsId = new HashSet<Integer>();
         Inventory inventory = new Inventory(3, 3, cardsId);
         iRepository.save(inventory);
@@ -57,7 +57,7 @@ public class InventoryRepositoryTest {
     }
 
     @Test
-    public void testExistsByUserIdFalse() {
+    void testExistsByUserIdFalse() {
         Set<Integer> cardsId = new HashSet<Integer>();
         Inventory inventory = new Inventory(3, 3, cardsId);
         iRepository.save(inventory);
@@ -65,7 +65,7 @@ public class InventoryRepositoryTest {
     }
 
     @Test
-    public void testDeleteByUserId() {
+    void testDeleteByUserId() {
         Set<Integer> cardsId = new HashSet<Integer>();
         Inventory inventory = new Inventory(4, 4, cardsId);
         iRepository.save(inventory);
@@ -74,7 +74,7 @@ public class InventoryRepositoryTest {
     }
 
     @Test
-    public void testDeleteByUserIdFalse() {
+    void testDeleteByUserIdFalse() {
         Set<Integer> cardsId = new HashSet<Integer>();
         Inventory inventory = new Inventory(4, 4, cardsId);
         iRepository.save(inventory);

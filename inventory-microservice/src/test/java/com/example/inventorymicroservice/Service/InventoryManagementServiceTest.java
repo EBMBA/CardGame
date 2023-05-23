@@ -38,7 +38,7 @@ import com.example.inventorymicroservice.repository.InventoryRepository;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(InventoryManagementService.class)
-public class InventoryManagementServiceTest {
+class InventoryManagementServiceTest {
     @MockBean
     private InventoryRepository inventoryRepository;
 
@@ -60,7 +60,7 @@ public class InventoryManagementServiceTest {
     }
 
     @Test
-    public void testGetInventoryDTO_InventoryExists() {
+    void testGetInventoryDTO_InventoryExists() {
         Integer userId = 1;
         Inventory inventory = new Inventory();
         inventory.setUserId(userId);
@@ -89,7 +89,7 @@ public class InventoryManagementServiceTest {
     }
 
     @Test
-    public void testGetInventoryDTO_InventoryNotExists() {
+    void testGetInventoryDTO_InventoryNotExists() {
         Integer userId = 1;
 
         when(inventoryRepository.existsByUserId(userId)).thenReturn(false);
@@ -100,7 +100,7 @@ public class InventoryManagementServiceTest {
     }
 
     @Test
-    public void testAddInventory_InventoryNotExists() {
+    void testAddInventory_InventoryNotExists() {
         Integer userId = 1;
         InventoryCreationRequest inventoryCreationRequest = new InventoryCreationRequest();
         inventoryCreationRequest.setUser_id(userId);
@@ -116,7 +116,7 @@ public class InventoryManagementServiceTest {
     }
 
     @Test
-    public void testAddInventory_InventoryExists() {
+    void testAddInventory_InventoryExists() {
         Integer userId = 1;
         InventoryCreationRequest inventoryCreationRequest = new InventoryCreationRequest();
         inventoryCreationRequest.setUser_id(userId);
@@ -130,7 +130,7 @@ public class InventoryManagementServiceTest {
     }
 
     @Test
-    public void testAddToUserInventory_CardNotPresent() {
+    void testAddToUserInventory_CardNotPresent() {
         Integer userId = 1;
         Integer cardId = 1;
         Inventory inventory = new Inventory();
@@ -148,7 +148,7 @@ public class InventoryManagementServiceTest {
     }
 
     @Test
-    public void testAddToUserInventory_CardAlreadyPresent() {
+    void testAddToUserInventory_CardAlreadyPresent() {
         Integer userId = 1;
         Integer cardId = 1;
         Inventory inventory = new Inventory();
@@ -166,7 +166,7 @@ public class InventoryManagementServiceTest {
     }
 
     @Test
-    public void testRemoveFromUserInventory_CardPresent() {
+    void testRemoveFromUserInventory_CardPresent() {
         Integer userId = 1;
         Integer cardId = 1;
         Inventory inventory = new Inventory();
@@ -185,7 +185,7 @@ public class InventoryManagementServiceTest {
     }
 
     @Test
-    public void testRemoveFromUserInventory_CardNotPresent() {
+    void testRemoveFromUserInventory_CardNotPresent() {
         Integer userId = 1;
         Integer cardId = 1;
         Inventory inventory = new Inventory();
@@ -202,7 +202,7 @@ public class InventoryManagementServiceTest {
     }
 
     @Test
-    public void testDeleteInventory_InventoryFound() {
+    void testDeleteInventory_InventoryFound() {
         Integer userId = 1;
         Inventory inventory = new Inventory();
         inventory.setUserId(userId);
@@ -216,7 +216,7 @@ public class InventoryManagementServiceTest {
     }
 
     @Test
-    public void testDeleteInventory_InventoryNotFound() {
+    void testDeleteInventory_InventoryNotFound() {
         Integer userId = 1;
 
         when(inventoryRepository.findByUserId(userId)).thenReturn(null);
