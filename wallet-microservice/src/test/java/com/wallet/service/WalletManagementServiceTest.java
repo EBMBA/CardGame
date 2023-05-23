@@ -45,7 +45,7 @@ import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(WalletManagementService.class)
-public class WalletManagementServiceTest {
+class WalletManagementServiceTest {
     
     @MockBean
     private WalletRepository wRepository;
@@ -80,7 +80,7 @@ public class WalletManagementServiceTest {
     }
 
     @Test
-    public void getWallet() {
+    void getWallet() {
         Mockito.when(
             wRepository.findByUserId(Mockito.any(Integer.class))
             ).thenReturn(wallet);
@@ -92,7 +92,7 @@ public class WalletManagementServiceTest {
     }
 
     @Test
-    public void testDoTransactionRequest_WithEnoughMoney() {
+    void testDoTransactionRequest_WithEnoughMoney() {
         Float transactionAmount = 100f;
         Float initialMoney = wallet.getMoney();
         when(wRepository.findByUserId(wallet.getUserId())).thenReturn(wallet);
@@ -108,7 +108,7 @@ public class WalletManagementServiceTest {
     }
 
     @Test
-    public void testDoTransactionRequest_NotEnoughMoney() {
+    void testDoTransactionRequest_NotEnoughMoney() {
         Float initialMoney = wallet.getMoney();
         Float transactionAmount = -2000f;
 
@@ -125,7 +125,7 @@ public class WalletManagementServiceTest {
     }
 
     @Test
-    public void testDoTransactionRequest_NoWalletFound() {
+    void testDoTransactionRequest_NoWalletFound() {
         when(wRepository.findByUserId(wallet.getUserId())).thenReturn(null);
 
         WalletTransactionRequest transactionRequest = new WalletTransactionRequest(200f);
@@ -137,7 +137,7 @@ public class WalletManagementServiceTest {
     }
 
     @Test
-    public void testDeleteWallet_WalletFound() {
+    void testDeleteWallet_WalletFound() {
         MockitoAnnotations.openMocks(this);
         when(wRepository.findByUserId(wallet.getUserId())).thenReturn(wallet).thenReturn(null);
 
@@ -148,7 +148,7 @@ public class WalletManagementServiceTest {
     }
 
     @Test
-    public void testDeleteWallet_WalletNotFound() {
+    void testDeleteWallet_WalletNotFound() {
         when(wRepository.findByUserId(wallet.getUserId())).thenReturn(null);
 
 

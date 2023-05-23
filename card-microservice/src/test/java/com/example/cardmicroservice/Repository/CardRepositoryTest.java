@@ -11,7 +11,7 @@ import com.example.cardmicroservice.model.Card;
 import com.example.cardmicroservice.repository.CardRepository;
 
 @DataJpaTest
-public class CardRepositoryTest {
+class CardRepositoryTest {
     @Autowired
     CardRepository cRepository;
     
@@ -21,7 +21,7 @@ public class CardRepositoryTest {
     }
 
     @Test
-    public void testFindByName() {
+    void testFindByName() {
         Card card = new Card(1, "mock", "mock", "mock", "mock", "mock", "mock", "mock", "mock", "mock", 200f);
         cRepository.save(card);
         Optional<Card> cardE = cRepository.findByName("mock");

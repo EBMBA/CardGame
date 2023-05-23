@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(InventoryManagementRestCRT.class)
-public class InventoryManagementRestCRTTest {
+class InventoryManagementRestCRTTest {
     @Autowired
     private MockMvc mvc;
 
@@ -66,7 +66,7 @@ public class InventoryManagementRestCRTTest {
     }
 
     @Test
-    public void testGetInventories_InventoryExists_ReturnsOk() throws Exception {
+    void testGetInventories_InventoryExists_ReturnsOk() throws Exception {
         when(inventoryManagementService.getInventoryDTO(1)).thenReturn(inventoryDTO);
 
         RequestBuilder request = MockMvcRequestBuilders.get("/api/inventories/1")
@@ -81,7 +81,7 @@ public class InventoryManagementRestCRTTest {
     }
 
     @Test
-    public void testGetInventories_InventoryDoesNotExist_ReturnsBadRequest() throws Exception {
+    void testGetInventories_InventoryDoesNotExist_ReturnsBadRequest() throws Exception {
         when(inventoryManagementService.getInventoryDTO(1)).thenReturn(null);
 
         RequestBuilder request = MockMvcRequestBuilders.get("/api/inventories/1")
@@ -93,7 +93,7 @@ public class InventoryManagementRestCRTTest {
     }
 
     @Test
-    public void testAddInventory_InventoryAddedSuccessfully_ReturnsOk() throws Exception {
+    void testAddInventory_InventoryAddedSuccessfully_ReturnsOk() throws Exception {
         when(inventoryManagementService.addInventory(inventoryCreationRequest)).thenReturn(true);
         when(inventoryManagementService.getInventoryDTO(inventoryCreationRequest.getUser_id()))
                 .thenReturn(inventoryDTO);
@@ -111,7 +111,7 @@ public class InventoryManagementRestCRTTest {
     }
 
     @Test
-    public void testAddInventory_InventoryNotCreated_ReturnsBadRequest() throws Exception {
+    void testAddInventory_InventoryNotCreated_ReturnsBadRequest() throws Exception {
         when(inventoryManagementService.addInventory(inventoryCreationRequest)).thenReturn(false);
 
         RequestBuilder request = MockMvcRequestBuilders.post("/api/inventories")
@@ -125,7 +125,7 @@ public class InventoryManagementRestCRTTest {
     }
 
     @Test
-    public void testDeleteInventory_InventoryDeletedSuccessfully_ReturnsOk() throws Exception {
+    void testDeleteInventory_InventoryDeletedSuccessfully_ReturnsOk() throws Exception {
         when(inventoryManagementService.deleteInventory(1)).thenReturn(true);
 
         RequestBuilder request = MockMvcRequestBuilders.delete("/api/inventories/1")
@@ -137,7 +137,7 @@ public class InventoryManagementRestCRTTest {
     }
 
     @Test
-    public void testDeleteInventory_InventoryNotDeleted_ReturnsBadRequest() throws Exception {
+    void testDeleteInventory_InventoryNotDeleted_ReturnsBadRequest() throws Exception {
         when(inventoryManagementService.deleteInventory(1)).thenReturn(false);
 
         RequestBuilder request = MockMvcRequestBuilders.delete("/api/inventories/1")
@@ -149,7 +149,7 @@ public class InventoryManagementRestCRTTest {
     }
 
     @Test
-    public void testUpdateInventory_InventoryUpdatedSuccessfully_ReturnsOk() throws Exception {
+    void testUpdateInventory_InventoryUpdatedSuccessfully_ReturnsOk() throws Exception {
         when(inventoryManagementService.addToUserInventory(1,inventoryOperationRequest.getCard_id())).thenReturn(true);
 
         RequestBuilder request = MockMvcRequestBuilders.put("/api/inventories/1")
@@ -163,7 +163,7 @@ public class InventoryManagementRestCRTTest {
     }
 
     @Test
-    public void testUpdateInventory_InventoryNotUpdated_ReturnsBadRequest() throws Exception {
+    void testUpdateInventory_InventoryNotUpdated_ReturnsBadRequest() throws Exception {
         when(inventoryManagementService.addToUserInventory(1,inventoryOperationRequest.getCard_id())).thenReturn(false);
 
         RequestBuilder request = MockMvcRequestBuilders.put("/api/inventories/1")

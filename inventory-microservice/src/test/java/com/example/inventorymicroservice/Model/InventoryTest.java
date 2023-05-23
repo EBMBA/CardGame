@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import com.example.inventorymicroservice.model.Inventory;
 
-public class InventoryTest {
+class InventoryTest {
     private Inventory inventory;
 
     @BeforeEach
@@ -16,7 +16,7 @@ public class InventoryTest {
     }
 
     @Test
-    public void testHasCard_CardExists_ReturnsTrue() {
+    void testHasCard_CardExists_ReturnsTrue() {
         Integer cardId = 1;
         inventory.addCard(cardId);
 
@@ -26,7 +26,7 @@ public class InventoryTest {
     }
 
     @Test
-    public void testHasCard_CardDoesNotExist_ReturnsFalse() {
+    void testHasCard_CardDoesNotExist_ReturnsFalse() {
         Integer cardId = 1;
 
         boolean result = inventory.hasCard(cardId);
@@ -35,7 +35,7 @@ public class InventoryTest {
     }
 
     @Test
-    public void testAddCard_CardAddedSuccessfully_ReturnsTrue() {
+    void testAddCard_CardAddedSuccessfully_ReturnsTrue() {
         Integer cardId = 1;
 
         boolean result = inventory.addCard(cardId);
@@ -45,7 +45,7 @@ public class InventoryTest {
     }
 
     @Test
-    public void testAddCard_CardAlreadyExists_ReturnsFalse() {
+    void testAddCard_CardAlreadyExists_ReturnsFalse() {
         Integer cardId = 1;
         inventory.addCard(cardId);
 
@@ -55,7 +55,7 @@ public class InventoryTest {
     }
 
     @Test
-    public void testRemoveCard_CardExistsInInventory_ReturnsTrue() {
+    void testRemoveCard_CardExistsInInventory_ReturnsTrue() {
         Integer cardId = 1;
         inventory.addCard(cardId);
 
@@ -66,7 +66,7 @@ public class InventoryTest {
     }
 
     @Test
-    public void testRemoveCard_CardDoesNotExistInInventory_ReturnsFalse() {
+    void testRemoveCard_CardDoesNotExistInInventory_ReturnsFalse() {
         Integer cardId = 1;
 
         boolean result = inventory.removeCard(cardId);

@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(UserManagementRestCRT.class)
-public class UserManagementRestCRTTest {
+class UserManagementRestCRTTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -42,7 +42,7 @@ public class UserManagementRestCRTTest {
     private UserManagementService uAuthService;
 
     @Test
-    public void testNewUser_RegisterSuccess_ReturnsCreatedStatus() throws Exception {
+    void testNewUser_RegisterSuccess_ReturnsCreatedStatus() throws Exception {
         UserRegisterRequest userRequest = new UserRegisterRequest("mock", "mock", "testPassword");
         UserRegisterResponse registerResponse = new UserRegisterResponse(1);
 
@@ -60,7 +60,7 @@ public class UserManagementRestCRTTest {
     }
 
     @Test
-    public void testNewUser_RegisterFailure_ReturnsConflictStatus() throws Exception {
+    void testNewUser_RegisterFailure_ReturnsConflictStatus() throws Exception {
         UserRegisterRequest userRequest = new UserRegisterRequest("mock", "mock", "testPassword");
 
         when(uAuthService.register(any(UserRegisterRequest.class))).thenReturn(null);
@@ -77,7 +77,7 @@ public class UserManagementRestCRTTest {
     }
 
     @Test
-    public void testGetUsers_ReturnsUsersList() throws Exception {
+    void testGetUsers_ReturnsUsersList() throws Exception {
         UserDTO user1 = new UserDTO();
         user1.setUser_id("1");
         user1.setUsername("user1");
@@ -106,7 +106,7 @@ public class UserManagementRestCRTTest {
     }
 
     @Test
-    public void testUpdateUser_ValidUser_ReturnsOkStatus() throws Exception {
+    void testUpdateUser_ValidUser_ReturnsOkStatus() throws Exception {
         UserRegisterRequest userRequest = new UserRegisterRequest("updated", "Updated User", "testPassword");
         String userId = "1";
 
@@ -125,7 +125,7 @@ public class UserManagementRestCRTTest {
     }
 
     @Test
-    public void testUpdateUser_InvalidUser_ReturnsBadRequestStatus() throws Exception {
+    void testUpdateUser_InvalidUser_ReturnsBadRequestStatus() throws Exception {
         UserRegisterRequest userRequest = new UserRegisterRequest("invalid", "Invalid User", "testPassword");
         String userId = "1";
 
@@ -143,7 +143,7 @@ public class UserManagementRestCRTTest {
     }
 
     @Test
-    public void testDeleteUser_ValidUser_ReturnsNoContentStatus() throws Exception {
+    void testDeleteUser_ValidUser_ReturnsNoContentStatus() throws Exception {
         String userId = "1";
 
         when(uAuthService.deleteUser(Mockito.anyInt())).thenReturn(true);
@@ -159,7 +159,7 @@ public class UserManagementRestCRTTest {
     }
 
     @Test
-    public void testDeleteUser_InvalidUser_ReturnsNotModifiedStatus() throws Exception {
+    void testDeleteUser_InvalidUser_ReturnsNotModifiedStatus() throws Exception {
         String userId = "1";
 
         when(uAuthService.deleteUser(Mockito.anyInt())).thenReturn(false);

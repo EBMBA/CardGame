@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.example.cardmicroservice.model.Card;
 
-public class CardTest {
+class CardTest {
     private List<Integer> cardId;
     private List<String> name;
     private List<String> description;
@@ -83,7 +83,7 @@ public class CardTest {
     }
 
     @Test
-    public void testCard() {
+    void testCard() {
         System.out.println("[TEST] -- Card creation");
         for (int i = 0; i < cardId.size(); i++) {
             Card card = new Card(cardId.get(i), name.get(i), description.get(i), imgUrl.get(i), family.get(i), affinity.get(i), hp.get(i), energy.get(i), attack.get(i), defense.get(i), price.get(i));
@@ -105,7 +105,7 @@ public class CardTest {
     // Test toString method of Card
     // exepected result : "Card ["+this.cardId+"]: name:"+this.name+", description:"+this.description+", imgUrl:"+this.imgUrl+" family:"+this.family+" affinity:"+this.affinity+" hp:"+this.hp+" energy:"+this.energy+" attack:"+this.attack+" defense:"+this.defense+" price:"+this.price
     @Test
-    public void testToString() {
+    void testToString() {
         System.out.println("[TEST] -- Card toString");
         for (int i = 0; i < cardId.size(); i++) {
             Card card = new Card(cardId.get(i), name.get(i), description.get(i), imgUrl.get(i), family.get(i), affinity.get(i), hp.get(i), energy.get(i), attack.get(i), defense.get(i), price.get(i));

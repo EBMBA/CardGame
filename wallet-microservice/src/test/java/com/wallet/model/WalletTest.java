@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import com.wallet.model.Wallet.Wallet;
 
-public class WalletTest {
+class WalletTest {
     private List<Integer> walletIds;
     private List<Float> money;
     private List<Integer> userIds;

@@ -35,7 +35,7 @@ import com.example.common.model.CardDTO;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(CardManagementService.class)
-public class CardServiceTest {
+class CardServiceTest {
     @MockBean
     private CardRepository cardRepository;
 
@@ -67,7 +67,7 @@ public class CardServiceTest {
     }
     
     @Test
-    public void testAddCard_NewCard_Success() {
+    void testAddCard_NewCard_Success() {
 
         when(cardRepository.findByName(newCardDTO.getName()))
             .thenReturn(Optional.empty())
@@ -81,7 +81,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void testAddCard_ExistingCard_Failure() {
+    void testAddCard_ExistingCard_Failure() {
         CardDTO existingCardDTO = new CardDTO();
         existingCardDTO.setName("ExistingCard");
 
@@ -94,7 +94,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void testGetCards() {
+    void testGetCards() {
         List<Card> cardList = new ArrayList<>();
         cardList.add(new Card());
         cardList.add(new Card());
@@ -111,7 +111,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void testDeleteCard() {
+    void testDeleteCard() {
         when(cardRepository.findById(Integer.valueOf(newCardDTO.getCard_id()))).thenReturn(Optional.of( new Card(1, "mock", "mock", "mock", "mock", "mock", "mock", "mock", "mock", "mock", 200f)));
 
         boolean result = cardService.deleteCard(Integer.valueOf(newCardDTO.getCard_id()));
@@ -120,7 +120,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void testDeleteCard_NonExistingCard_Failure() {
+    void testDeleteCard_NonExistingCard_Failure() {
         when(cardRepository.findById(Integer.valueOf(newCardDTO.getCard_id()))).thenReturn(Optional.empty());
 
         boolean result = cardService.deleteCard(Integer.valueOf(newCardDTO.getCard_id()));
@@ -129,7 +129,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void testUpdateCard() {
+    void testUpdateCard() {
         when(cardRepository.findById(Integer.valueOf(newCardDTO.getCard_id()))).thenReturn(Optional.of( new Card(1, "mock", "mock", "mock", "mock", "mock", "mock", "mock", "mock", "mock", 200f)));
 
         boolean result = cardService.updateCard(1, newCardDTO);
@@ -138,7 +138,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void testUpdateCard_NonExistingCard_Failure() {
+    void testUpdateCard_NonExistingCard_Failure() {
         when(cardRepository.findById(Integer.valueOf(newCardDTO.getCard_id()))).thenReturn(Optional.empty());
 
         boolean result = cardService.updateCard(1, newCardDTO);

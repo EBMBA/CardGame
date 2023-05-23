@@ -35,7 +35,7 @@ import java.util.Optional;
 @ExtendWith(SpringExtension.class)
 // @SpringBootTest
 @WebMvcTest(UserManagementService.class)
-public class UserManagementServiceTest {
+class UserManagementServiceTest {
 
     @MockBean
     private UserRepository uRepository;
@@ -58,7 +58,7 @@ public class UserManagementServiceTest {
     }
 
     @Test
-    public void testRegister_NewUser_Success() {
+    void testRegister_NewUser_Success() {
         UserRegisterRequest userRequest = new UserRegisterRequest("mock", "mock", "testPassword");
         User newUser = new User();
         newUser.setUsername("mock");
@@ -81,7 +81,7 @@ public class UserManagementServiceTest {
     }
 
     @Test
-    public void testRegister_ExistingUser_Failure() {
+    void testRegister_ExistingUser_Failure() {
         UserRegisterRequest userRequest = new UserRegisterRequest("mock", "mock", "testPassword");
         User existingUser = new User();
         existingUser.setUsername("mock");
@@ -99,7 +99,7 @@ public class UserManagementServiceTest {
     }
 
     @Test
-    public void testDeleteUser_UserExists_Success() {
+    void testDeleteUser_UserExists_Success() {
         Integer userId = 1;
         User existingUser = new User();
         existingUser.setUserId(userId);
@@ -119,7 +119,7 @@ public class UserManagementServiceTest {
     }
 
     @Test
-    public void testDeleteUser_UserNotExists_Failure() {
+    void testDeleteUser_UserNotExists_Failure() {
         Integer userId = 1;
 
         when(uRepository.findByUserId(userId)).thenReturn(Optional.empty());
@@ -134,7 +134,7 @@ public class UserManagementServiceTest {
     }
 
     @Test
-    public void testGetUser_UserExists_Success() {
+    void testGetUser_UserExists_Success() {
         Integer userId = 1;
         User existingUser = new User();
         existingUser.setUserId(userId);
@@ -157,7 +157,7 @@ public class UserManagementServiceTest {
     }
 
     @Test
-    public void testGetUser_UserNotExists_Failure() {
+    void testGetUser_UserNotExists_Failure() {
         Integer userId = 1;
 
         when(uRepository.findByUserId(userId)).thenReturn(Optional.empty());
@@ -169,7 +169,7 @@ public class UserManagementServiceTest {
     }
 
     @Test
-    public void testUpdateUser_UserExists_Success() {
+    void testUpdateUser_UserExists_Success() {
         Integer userId = 1;
         User existingUser = new User();
         existingUser.setUserId(userId);
@@ -195,7 +195,7 @@ public class UserManagementServiceTest {
     }
 
     @Test
-    public void testUpdateUser_UserNotExists_Failure() {
+    void testUpdateUser_UserNotExists_Failure() {
         Integer userId = 1;
         UserRegisterRequest userRequest = new UserRegisterRequest("mock", "mock", "testPassword");
 
@@ -209,7 +209,7 @@ public class UserManagementServiceTest {
     }
 
     @Test
-    public void testGetAllUsers_Success() {
+    void testGetAllUsers_Success() {
         Integer userId = 1;
         User existingUser = new User();
         existingUser.setUserId(userId);
@@ -236,7 +236,7 @@ public class UserManagementServiceTest {
     }
 
     @Test
-    public void testGetAllUsers_NoUsers_Success() {
+    void testGetAllUsers_NoUsers_Success() {
         List<User> userList = new ArrayList<>();
 
         when(uRepository.findAll()).thenReturn(userList);
