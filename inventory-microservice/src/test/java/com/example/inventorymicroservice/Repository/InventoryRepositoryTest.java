@@ -27,7 +27,8 @@ public class InventoryRepositoryTest {
         Inventory inventory = new Inventory(1, 1, cardsId);
         iRepository.save(inventory);
         Inventory inventoryE = iRepository.findByUserId(1);
-        assert(inventoryE.getUserId() == inventory.getUserId());
+        assertEquals(inventoryE.getUserId(), inventory.getUserId());
+        
     }
 
     @Test
@@ -36,7 +37,7 @@ public class InventoryRepositoryTest {
         Inventory inventory = new Inventory(1, 1, cardsId);
         iRepository.save(inventory);
         Inventory inventoryE = iRepository.findByUserId(2);
-        assert(inventoryE == null);
+        assertEquals(inventoryE, null);
     }
 
     @Test
@@ -44,7 +45,7 @@ public class InventoryRepositoryTest {
         Set<Integer> cardsId = new HashSet<Integer>();
         Inventory inventory = new Inventory(2, 2, cardsId);
         iRepository.save(inventory);
-        assert(iRepository.findByUserId(2).getUserId() == 2);
+        assertEquals(iRepository.findByUserId(2).getUserId(), inventory.getUserId());
     }
 
     @Test
@@ -52,7 +53,7 @@ public class InventoryRepositoryTest {
         Set<Integer> cardsId = new HashSet<Integer>();
         Inventory inventory = new Inventory(3, 3, cardsId);
         iRepository.save(inventory);
-        assert(iRepository.existsByUserId(3) == true);
+        assertEquals(iRepository.findByUserId(3).getUserId(), inventory.getUserId());
     }
 
     @Test
@@ -60,7 +61,7 @@ public class InventoryRepositoryTest {
         Set<Integer> cardsId = new HashSet<Integer>();
         Inventory inventory = new Inventory(3, 3, cardsId);
         iRepository.save(inventory);
-        assert(iRepository.existsByUserId(4) == false);
+        assertFalse(iRepository.existsByUserId(4));
     }
 
     @Test
@@ -69,7 +70,7 @@ public class InventoryRepositoryTest {
         Inventory inventory = new Inventory(4, 4, cardsId);
         iRepository.save(inventory);
         iRepository.deleteByUserId(4);
-        assert(iRepository.existsByUserId(4) == false);
+        assertFalse(iRepository.existsByUserId(4));
     }
 
     @Test
@@ -78,7 +79,7 @@ public class InventoryRepositoryTest {
         Inventory inventory = new Inventory(4, 4, cardsId);
         iRepository.save(inventory);
         iRepository.deleteByUserId(5);
-        assert(iRepository.existsByUserId(4) == true);
+        assertTrue(iRepository.existsByUserId(4));
     }
 
 }

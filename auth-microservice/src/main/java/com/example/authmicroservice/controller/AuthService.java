@@ -1,5 +1,8 @@
 package com.example.authmicroservice.controller;
 
+import javax.xml.validation.Validator;
+import javax.xml.validation.ValidatorHandler;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -75,7 +78,7 @@ public class AuthService implements UserDetailsService {
             authUser.setPassword(passwordEncoder.encode(userRegisterRequest.getPassword()));
 
             log.info("Registering user: {}", authUser);
-            return  authRepository.save(authUser) != null ? true : false;
+            return  authRepository.save(authUser) != null;
         }
         
         log.error("Received error code from", userServiceUrl);

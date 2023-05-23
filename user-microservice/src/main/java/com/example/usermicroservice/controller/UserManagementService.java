@@ -184,7 +184,7 @@ public class UserManagementService {
             }
             log.info("Inventory deleted: {} ", userId);
             log.info("User deleted: {} ", userId);
-			return getUser(userId) == null ? true : false;
+			return getUser(userId) == null ;
 		}
         log.error("Error deleting user {}. User seems no to exist.", userId);
 		return false;
