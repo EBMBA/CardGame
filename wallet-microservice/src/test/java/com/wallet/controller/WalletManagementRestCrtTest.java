@@ -32,7 +32,7 @@ import com.example.common.model.WalletTransactionRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wallet.controller.WalletManagementRestCrt;
 import com.wallet.controller.WalletManagementService;
-import com.wallet.model.Wallet.Wallet;
+import com.wallet.model.Wallet;
 import com.wallet.repository.WalletRepository;
 
 @ExtendWith(SpringExtension.class)

@@ -137,7 +137,7 @@ class UserManagementRestCRTTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
-        assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+        assertEquals(HttpStatus.NOT_MODIFIED.value(), result.getResponse().getStatus());
 
         verify(uAuthService, times(1)).updateUser(any(UserRegisterRequest.class), Mockito.anyInt());
     }

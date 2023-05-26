@@ -2,16 +2,18 @@ package com.example.common.api;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import com.example.common.Exception.UserAlreadyExistsException;
+import com.example.common.Exception.UserNotFoundException;
 import com.example.common.model.UserDTO;
 import com.example.common.model.UserRegisterRequest;
+import java.util.Collections;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 // This class will be used to communicate with the user microservice
@@ -24,97 +26,129 @@ import lombok.extern.slf4j.Slf4j;
 public class UserAPI {
     WebClient webClient;
 
-    private String USER_SERVICE_URL = "http://localhost:8087/api/user" ;
+    private String userServiceUrl;
 
     public UserAPI(@Value("${USER_SERVICE_URL}") String userServiceUrl) {
-        this.USER_SERVICE_URL = userServiceUrl;
-        this.webClient = WebClient.create(USER_SERVICE_URL);
+        this.userServiceUrl = userServiceUrl;
+        this.webClient = WebClient.create(userServiceUrl);
     }
 
     public UserAPI() {
     }
 
-    public void setUSER_SERVICE_URL(String userServiceUrl) {
-        this.USER_SERVICE_URL = userServiceUrl;
-        this.webClient = WebClient.create(USER_SERVICE_URL);
+    public void setuserServiceUrl(String userServiceUrl) {
+        this.userServiceUrl = userServiceUrl;
+        this.webClient = WebClient.create(userServiceUrl);
     }
 
     // This method will return the user with the given id with the use of webclient 
-    public UserDTO getUser(Integer userid) {
-        UserDTO userDTO = webClient.get()
-            .uri(USER_SERVICE_URL  + "/" + userid)
-            .retrieve()
-            .bodyToMono(UserDTO.class)
-            .block();
-
-        log.info("UserDTO get from request to the user microservice: {}", userDTO);
-        return userDTO;
+    public UserDTO getUser(Integer userid) throws UserNotFoundException{
+        try {
+            UserDTO userDTO = webClient.get()
+                .uri(userServiceUrl  + "/" + userid)
+                .retrieve()
+                .bodyToMono(UserDTO.class)
+                .block();
+    
+            log.info("UserDTO get from request to the user microservice: {}", userDTO);
+            return userDTO;
+        } catch (WebClientResponseException.NotFound ex) {
+            throw new UserNotFoundException("User not found with id: " + userid);
+        }
     }
 
     // This method will update the user with the given id with the use of webclient
-    public Boolean updateUser(Integer userid, UserRegisterRequest userRegisterRequest) {
-        ResponseEntity<Void> responseEntity = webClient.put()
-            .uri(USER_SERVICE_URL + "/" + userid)
-            .bodyValue(userRegisterRequest)
-            .retrieve()
-            .toEntity(Void.class)
-            .block();
+    public Boolean updateUser(Integer userid, UserRegisterRequest userRegisterRequest) throws UserNotFoundException{
+        try{
+            ResponseEntity<Void> responseEntity = webClient.put()
+                .uri(userServiceUrl + "/" + userid)
+                .bodyValue(userRegisterRequest)
+                .retrieve()
+                .toEntity(Void.class)
+                .block();
 
-        if (responseEntity.getStatusCode() != HttpStatus.OK) {
-            log.error("Error updating the user with id: {}", userid);
-            return false;
+            if (responseEntity == null || responseEntity.getStatusCode() != HttpStatus.OK) {
+                log.error("Error updating the user with id: {}", userid);
+                return false;
+            }
+            
+            log.info("User with id: {} updated", userid);
+            return true;
+        }catch (WebClientResponseException.NotFound ex) {
+            throw new UserNotFoundException("User not found with id: " + userid);
         }
-        
-        log.info("User with id: {} updated", userid);
-        return true;
     }
 
     // This method will delete the user with the given id with the use of webclient
-    public Boolean deleteUser(Integer userid) {
-        ResponseEntity<Void> responseEntity = webClient.delete()
-            .uri(USER_SERVICE_URL + "/" + userid)
-            .retrieve()
-            .toEntity(Void.class)
-            .block();
+    public Boolean deleteUser(Integer userid) throws UserNotFoundException {
+        try{
+            ResponseEntity<Void> responseEntity = webClient.delete()
+                .uri(userServiceUrl + "/" + userid)
+                .retrieve()
+                .toEntity(Void.class)
+                .block();
 
-        if (responseEntity.getStatusCode() != HttpStatus.NO_CONTENT) {
-            log.error("Error deleting the user with id: {}", userid);
-            return false;
+            if (responseEntity == null || responseEntity.getStatusCode() != HttpStatus.NO_CONTENT) {
+                log.error("Error deleting the user with id: {}", userid);
+                return false;
+            }
+            
+            log.info("User with id: {} deleted", userid);
+            return true;
+        } catch (WebClientResponseException.NotFound ex) {
+            throw new UserNotFoundException("User not found with id: " + userid);
         }
-        
-        log.info("User with id: {} deleted", userid);
-        return true;
     }
 
     // This method will create the user with the given id with the use of webclient
-    public Boolean createUser(UserRegisterRequest userRegisterRequest) {
-        ResponseEntity<Void> responseEntity = webClient.post()
-            .uri(USER_SERVICE_URL)
+    public Boolean createUser(UserRegisterRequest userRegisterRequest) throws UserAlreadyExistsException {
+        try {
+            ResponseEntity<Void> responseEntity = webClient.post()
+            .uri(userServiceUrl)
             .bodyValue(userRegisterRequest)
             .retrieve()
             .toEntity(Void.class)
             .block();
 
-        if (responseEntity.getStatusCode() != HttpStatus.OK) {
-            log.error("Error creating the user with id: {}", userRegisterRequest);
-            return false;
+            if (responseEntity == null || responseEntity.getStatusCode() != HttpStatus.CREATED) {
+                log.error("Error creating the user with id: {}", userRegisterRequest);
+                return false;
+            }
+
+            log.info("User with id: {} created", userRegisterRequest);
+            return true;
+            
+        } catch (WebClientResponseException.Conflict e) {
+            throw new UserAlreadyExistsException("User already exists with username: " + userRegisterRequest.getUsername());
         }
         
-        log.info("User with id: {} created", userRegisterRequest);
-        return true;
+        // ResponseEntity<Void> responseEntity = webClient.post()
+        //     .uri(userServiceUrl)
+        //     .bodyValue(userRegisterRequest)
+        //     .retrieve()
+        //     .toEntity(Void.class)
+        //     .block();
+
+        // if (responseEntity == null || responseEntity.getStatusCode() != HttpStatus.OK) {
+        //     log.error("Error creating the user with id: {}", userRegisterRequest);
+        //     return false;
+        // }
+        
+        // log.info("User with id: {} created", userRegisterRequest);
+        // return true;
     }
 
     // This method will return all the users with the use of webclient
-    public List<UserDTO> getUsers() {
+    public List<UserDTO> getUsers()  {
         ResponseEntity<List<UserDTO>> responseEntity = webClient.get()
-            .uri(USER_SERVICE_URL)
+            .uri(userServiceUrl)
             .retrieve()
             .toEntityList(UserDTO.class)
             .block();
 
-        if (responseEntity.getStatusCode() != HttpStatus.OK) {
+        if ( responseEntity == null || responseEntity.getStatusCode() != HttpStatus.OK) {
             log.error("Error getting users");
-            return null;
+            return Collections.emptyList();
         }
 
         List<UserDTO> users = responseEntity.getBody();

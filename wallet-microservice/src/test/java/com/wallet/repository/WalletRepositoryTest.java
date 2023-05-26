@@ -11,7 +11,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import com.wallet.model.Wallet.Wallet;
+
+import com.wallet.model.Wallet;
 import com.wallet.repository.WalletRepository;
 
 

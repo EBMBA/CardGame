@@ -2,9 +2,6 @@ package com.example.cardmicroservice.controller;
 
 
 import com.example.common.model.CardDTO;
-import com.example.common.model.InventoryOperationRequest;
-import com.example.common.model.Enum.InventoryTransactionType;
-
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;

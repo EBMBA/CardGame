@@ -26,6 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.example.common.Exception.UserNotFoundException;
 import com.example.common.api.CardAPI;
 import com.example.common.api.UserAPI;
 import com.example.common.model.CardDTO;
@@ -79,7 +80,12 @@ class InventoryManagementServiceTest {
         when(cardAPI.getCard(1)).thenReturn(cardDTO1);
         when(cardAPI.getCard(2)).thenReturn(cardDTO2);
         when(cardAPI.getCard(3)).thenReturn(cardDTO3);
-        when(userAPI.getUser(userId)).thenReturn(userDTO);
+        try {
+            when(userAPI.getUser(userId)).thenReturn(userDTO);
+        } catch (UserNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         InventoryDTO result = inventoryManagementService.getInventoryDTO(userId);
 

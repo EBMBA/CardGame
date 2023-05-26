@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.example.common.Exception.UserAlreadyExistsException;
+import com.example.common.Exception.UserNotFoundException;
 import com.example.common.model.UserDTO;
 import com.example.common.model.UserRegisterRequest;
 import com.example.common.model.UserRegisterResponse;
@@ -33,17 +37,22 @@ public class UserManagementRestCRT {
     @Autowired
     UserManagementService uAuthService;
 
+    private static final String UserNotFound_ERROR_MESSAGE = "User not found";
+
+
     @PostMapping(value = {""},consumes = "application/json")
     @ResponseBody
     public ResponseEntity<Object> newUser(@RequestBody UserRegisterRequest user, HttpServletResponse response) {
-        log.info("Creating user {} ", user);
-        UserRegisterResponse registerResponse =  uAuthService.register(user);
-        if (registerResponse != null) {
-            log.info("User created {} ", user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(registerResponse);
-        }
-        log.error("User already exists {} ", user);
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        try {
+            UserRegisterResponse registerResponse =  uAuthService.register(user);
+            if (registerResponse != null) {
+                return ResponseEntity.status(HttpStatus.CREATED).body(registerResponse);
+            }
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        } catch (UserAlreadyExistsException e) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT, "User Already Exists", e);
+        } 
     }
 
     @GetMapping(value = {""})
@@ -60,39 +69,38 @@ public class UserManagementRestCRT {
         return ResponseEntity.ok().body(users);   
     }
 
-    @PutMapping(value="/{user_id}")
-	public ResponseEntity<Object> updateUser(@PathVariable String user_id, @RequestBody UserRegisterRequest user) {
-        log.info("Updating user : {} with information {}", user_id, user);
-        if (! uAuthService.updateUser(user, Integer.valueOf(user_id))) {
-            log.error("Can't update user : {} with information {}", user_id, user);
-		    return ResponseEntity.badRequest().body(null)  ;
+    @PutMapping(value="/{userId}")
+	public ResponseEntity<Object> updateUser(@PathVariable String userId, @RequestBody @Valid UserRegisterRequest user) {
+        try {
+            return Boolean.TRUE.equals(uAuthService.updateUser(user, Integer.valueOf(userId))) ?
+                    ResponseEntity.ok().body(null) :
+                    ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, UserNotFound_ERROR_MESSAGE, e);
         }
-        log.info("User updated : {} with information {}", user_id, user);
-		return ResponseEntity.ok().body(null) ; 
 	}
 	
-	@DeleteMapping(value="/{user_id}")
-	public ResponseEntity<Object> deleteUser(@PathVariable String user_id) {
-        log.info("Deleting user : {} ", user_id);
-        if (!uAuthService.deleteUser(Integer.valueOf(user_id))) {
-            log.error("Can't delete user : {} ", user_id);
-            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+	@DeleteMapping(value="/{userId}")
+	public ResponseEntity<Object> deleteUser(@PathVariable String userId) {
+        try {
+            return Boolean.TRUE.equals(uAuthService.deleteUser(Integer.valueOf(userId))) ?
+             ResponseEntity.status(HttpStatus.NO_CONTENT).body(null) :
+             ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null) ;
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, UserNotFound_ERROR_MESSAGE, e);
         }
-        log.info("User deleted : {} ", user_id);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null) ;
 	}
 
-    @GetMapping(value = {"/{user_id}"})
+    @GetMapping(value = {"/{userId}"})
     @ResponseBody
-    public ResponseEntity<Object> getUser(@PathVariable String user_id,HttpServletRequest request) {
-        log.info("Getting user : {} ", user_id);
-        UserDTO user = uAuthService.getUser(Integer.valueOf(user_id));
-
-        if (user != null) {
-            log.info("User found : {} ", user_id);
-            return ResponseEntity.ok(user);
+    public ResponseEntity<Object> getUser(@PathVariable String userId,HttpServletRequest request) throws UserNotFoundException{
+        try{
+            return ResponseEntity.ok(uAuthService.getUser(Integer.valueOf(userId)));
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, UserNotFound_ERROR_MESSAGE, e);
         }
-        log.error("User not found : {} ", user_id);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }   
 }

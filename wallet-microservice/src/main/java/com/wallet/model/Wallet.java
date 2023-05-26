@@ -1,6 +1,7 @@
-package com.wallet.model.Wallet;
+package com.wallet.model;
 
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,8 +14,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-//import com.sp.model.User.User;
+import com.example.common.Exception.WalletNotFoundException;
 import com.example.common.model.UserDTO;
+import com.example.common.model.WalletDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,5 +46,10 @@ public class Wallet implements Serializable{
     
     public Boolean hasEnoughMoney(Float money) {
         return this.money + money >= 0;
+    }
+
+
+    public Wallet orElseThrow(Supplier<WalletNotFoundException> of) {
+        return null;
     }
 }

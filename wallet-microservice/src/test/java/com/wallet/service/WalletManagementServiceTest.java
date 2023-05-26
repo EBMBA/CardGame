@@ -6,42 +6,31 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
-
-import javax.persistence.criteria.CriteriaBuilder.In;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.reactive.server.WebTestClient.RequestHeadersUriSpec;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
+import com.example.common.Exception.UserNotFoundException;
+import com.example.common.Exception.WalletNotFoundException;
 import com.example.common.api.UserAPI;
 import com.example.common.model.UserDTO;
 import com.example.common.model.WalletDTO;
 import com.example.common.model.WalletTransactionRequest;
 import com.wallet.controller.WalletManagementService;
-import com.wallet.model.Wallet.Wallet;
-import com.wallet.model.Wallet.WalletMapper;
+import com.wallet.model.Wallet;
+import com.wallet.model.WalletMapper;
 import com.wallet.repository.WalletRepository;
-
-import java.net.URI;
-import java.util.ArrayList;
-
-import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(WalletManagementService.class)
@@ -56,6 +45,9 @@ class WalletManagementServiceTest {
     @MockBean
     private WebClient webClient;
 
+    @MockBean
+    private WalletMapper wMapper;
+
     @Autowired
     private WalletManagementService wService;
 
@@ -65,7 +57,7 @@ class WalletManagementServiceTest {
     UserDTO userDTO = new UserDTO();
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws UserNotFoundException {
         System.out.println("[BEFORE TEST] -- Add wallet to test");
         userDTO.setUser_id("1");
         userDTO.setName("test");
@@ -77,6 +69,7 @@ class WalletManagementServiceTest {
         MockitoAnnotations.openMocks(userAPI);
         MockitoAnnotations.openMocks(wRepository);
         MockitoAnnotations.openMocks(webClient);
+        MockitoAnnotations.openMocks(wMapper);
     }
 
     @Test
@@ -84,11 +77,18 @@ class WalletManagementServiceTest {
         Mockito.when(
             wRepository.findByUserId(Mockito.any(Integer.class))
             ).thenReturn(wallet);
-        userAPI.setUSER_SERVICE_URL("s");
+        Mockito.when(
+            wMapper.toDTO(Mockito.any(Wallet.class))
+            ).thenReturn(walletDTO);
+        userAPI.setuserServiceUrl("s");
 
-        WalletDTO walletDTO = wService.getWallet(1);
-        assert(walletDTO.getClass() == WalletDTO.class);
-        assert(walletDTO.getMoney() == wallet.getMoney());
+        try{
+            WalletDTO walletDTOResult = wService.getWallet(1);
+            assert(walletDTOResult.getClass() == WalletDTO.class);
+            assertEquals(wallet.getMoney(), walletDTOResult.getMoney());
+        } catch (Exception e) {
+            fail("Exception thrown");
+        }
     }
 
     @Test
@@ -100,10 +100,15 @@ class WalletManagementServiceTest {
 
         WalletTransactionRequest transactionRequest = new WalletTransactionRequest(transactionAmount);
 
-        boolean result = wService.doTransactionRequest(wallet.getUserId(), transactionRequest);
+        boolean result;
+        try {
+            result = wService.doTransactionRequest(wallet.getUserId(), transactionRequest);
+            assertTrue(result);
+            assertEquals(initialMoney + transactionAmount, wallet.getMoney());
+        } catch (WalletNotFoundException e) {
+            fail("Exception thrown");
+        }
 
-        assertTrue(result);
-        assertEquals(initialMoney + transactionAmount, wallet.getMoney());
         verify(wRepository, times(1)).save(wallet);
     }
 
@@ -117,9 +122,14 @@ class WalletManagementServiceTest {
 
         WalletTransactionRequest transactionRequest = new WalletTransactionRequest(transactionAmount);
 
-        boolean result = wService.doTransactionRequest(wallet.getUserId(), transactionRequest);
-
-        assertFalse(result);
+        boolean result;
+        try {
+            result = wService.doTransactionRequest(wallet.getUserId(), transactionRequest);
+            assertFalse(result);
+        } catch (WalletNotFoundException e) {
+            fail("Exception thrown");
+        }
+        
         assertEquals(initialMoney, wallet.getMoney());
         verify(wRepository, never()).save(wallet);
     }
@@ -129,10 +139,14 @@ class WalletManagementServiceTest {
         when(wRepository.findByUserId(wallet.getUserId())).thenReturn(null);
 
         WalletTransactionRequest transactionRequest = new WalletTransactionRequest(200f);
+        boolean result;
+        try {
+            result = wService.doTransactionRequest(wallet.getUserId(), transactionRequest);
+            fail("Exception not thrown");
+        } catch (WalletNotFoundException e) {
+            assertEquals("Wallet not found for user id: " + wallet.getUserId(), e.getMessage());
+        }
 
-        boolean result = wService.doTransactionRequest(wallet.getUserId(), transactionRequest);
-
-        assertFalse(result);
         verify(wRepository, never()).save(Mockito.any(Wallet.class));
     }
 
@@ -141,9 +155,14 @@ class WalletManagementServiceTest {
         MockitoAnnotations.openMocks(this);
         when(wRepository.findByUserId(wallet.getUserId())).thenReturn(wallet).thenReturn(null);
 
-        boolean result = wService.deleteWallet(wallet.getUserId());
+        boolean result;
+        try {
+            result = wService.deleteWallet(wallet.getUserId());
+            assertTrue(result);
+        } catch (WalletNotFoundException e) {
+            fail("Exception thrown");
+        }
 
-        assertTrue(result);
         verify(wRepository, times(1)).delete(wallet);
     }
 
@@ -152,9 +171,14 @@ class WalletManagementServiceTest {
         when(wRepository.findByUserId(wallet.getUserId())).thenReturn(null);
 
 
-        boolean result = wService.deleteWallet(wallet.getUserId());
+        boolean result;
+        try {
+            result = wService.deleteWallet(wallet.getUserId());
+            fail("Exception not thrown");
+        } catch (WalletNotFoundException e) {
+            assertEquals("Wallet not found for user id: " + wallet.getUserId(), e.getMessage());
+        }
 
-        assertFalse(result);
         verify(wRepository, never()).delete(Mockito.any(Wallet.class));
     }
 }

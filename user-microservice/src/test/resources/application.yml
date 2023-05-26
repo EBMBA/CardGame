@@ -1,5 +1,7 @@
 server:
   port: 8097
+  error: 
+    include-message: always
 WALLET_SERVICE_URL: "http://localhost:8096"
 INVENTORY_SERVICE_URL: "http://localhost:8095"
 

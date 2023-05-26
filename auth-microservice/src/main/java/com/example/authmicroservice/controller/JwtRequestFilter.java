@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -48,21 +49,26 @@ public class JwtRequestFilter extends OncePerRequestFilter{
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
-                System.out.println("Unable to get JWT Token");
-                System.out.println("JWT Token has expired");
+                logger.error("Unable to get JWT Token");
+                logger.error("JWT Token has expired");
             }
         } else{
             logger.warn("JWT Token does not begin with Bearer String");
         }
         // Once we get the token validate it.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.authService.loadUserByUsername(username);
+            UserDetails userDetails = null;
+            try {
+                userDetails = this.authService.loadUserByUsername(username);
+            } catch (UsernameNotFoundException e) {
+                logger.error("Username not found");
+            }
             // String userDetailsApiUrl = userApiUrl + "/auth/" + username;
             // UserDetails userDetails = restTemplate.getForObject(userDetailsApiUrl,UserDetails.class);
             
             // if token is valid configure Spring Security to manually set
             // authentication
-            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+            if (Boolean.TRUE.equals(jwtTokenUtil.validateToken(jwtToken, userDetails))) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

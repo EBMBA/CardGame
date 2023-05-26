@@ -7,13 +7,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
+import com.example.common.Exception.UserAlreadyExistsException;
+import com.example.common.Exception.UserNotFoundException;
+import com.example.common.Exception.WalletAlreadyExistException;
+import com.example.common.Exception.WalletNotFoundException;
 import com.example.common.api.InventoryAPI;
-import com.example.common.api.UserAPI;
 import com.example.common.api.WalletAPI;
 import com.example.common.model.InventoryCreationRequest;
 import com.example.common.model.UserDTO;
@@ -42,6 +41,8 @@ public class UserManagementService {
     private final String WALLET_SERVICE_URL ;
     private final String INVENTORY_SERVICE_URL ;
 
+    private static final String UserNotFound_ERROR_MESSAGE = "User not found";
+
     public UserManagementService(@Value("${WALLET_SERVICE_URL}") String walletServiceUrl, @Value("${INVENTORY_SERVICE_URL}") String inventoryServiceUrl) {
         this.WALLET_SERVICE_URL = walletServiceUrl;
         this.INVENTORY_SERVICE_URL = inventoryServiceUrl;
@@ -61,14 +62,13 @@ public class UserManagementService {
     // Create a wallet for the user
     // Create an inventory for the user
     // Return the user id
-    public UserRegisterResponse register(UserRegisterRequest user) {
-        // RestTemplate restTemplate = new RestTemplate();
+    public UserRegisterResponse register(UserRegisterRequest user) throws UserAlreadyExistsException {
         log.info("Creating user {} ", user);
 
         Optional<User> userOptional = uRepository.findByUsername(user.getUsername());
         if ( userOptional.isPresent()) {
             log.error("User already exists {} ", user);
-            return null;
+            throw new UserAlreadyExistsException("User already exists");
         }
 
         User newUser = new User();
@@ -81,27 +81,37 @@ public class UserManagementService {
         Optional<User> userOptional2 = uRepository.findByUsername(user.getUsername());
         if (Boolean.FALSE.equals(userOptional2.isPresent())) {
             log.error("Error saving user: {} ", user);
-            return null;
+            throw new UserAlreadyExistsException("Error saving user");
         }
 
         newUser = userOptional2.get();
         
         WalletOperationRequest walletOperationRequest = new WalletOperationRequest(newUser.getUserId());
-        log.info("Creating wallet for user {} ", newUser);
-        Boolean walletCreationResponseEntity = walletAPI.createWallet(walletOperationRequest);
-        
-        if (Boolean.FALSE.equals(walletCreationResponseEntity)) {
+        // log.info("Creating wallet for user {} ", newUser);
+
+        try {
+            Boolean walletCreationResponseEntity = walletAPI.createWallet(walletOperationRequest);
+            if (Boolean.FALSE.equals(walletCreationResponseEntity)) {
+                log.error("WalletNotCreated");
+                // delete user
+                uRepository.delete(newUser);
+                log.info("User deleted for : {} because of WalletNotCreated ", newUser);
+                return null;
+            }
+        } catch (WalletAlreadyExistException e) {
             log.error("WalletNotCreated");
             // delete user
             uRepository.delete(newUser);
             log.info("User deleted for : {} because of WalletNotCreated ", newUser);
             return null;
         }
+        
+        
 
-        log.info("Wallet created for user {} ", newUser);
+        // log.info("Wallet created for user {} ", newUser);
 
         // Create inventory with 5 cards
-        log.info("Creating inventory for user {} ", newUser);
+        // log.info("Creating inventory for user {} ", newUser);
         InventoryCreationRequest inventoryCreationRequest = new InventoryCreationRequest(newUser.getUserId());
         Boolean inventoryCreationResponseEntity = inventoryAPI.createInventory(inventoryCreationRequest);
 
@@ -110,8 +120,13 @@ public class UserManagementService {
             log.error("InventoryNotCreated");
 
             // delete wallet 
-            walletCreationResponseEntity = walletAPI.deleteWallet(newUser.getUserId());
-            if (Boolean.FALSE.equals(walletCreationResponseEntity)) {
+            try {
+                Boolean walletCreationResponseEntity = walletAPI.deleteWallet(newUser.getUserId());
+                if (Boolean.FALSE.equals(walletCreationResponseEntity)) {
+                    log.error("WalletNotDeleted");
+                    return null;
+                }
+            } catch (WalletNotFoundException e) {
                 log.error("WalletNotDeleted");
                 return null;
             }
@@ -122,7 +137,7 @@ public class UserManagementService {
             return null;
         }
 
-        log.info("Inventory created for user {} ", newUser);
+        // log.info("Inventory created for user {} ", newUser);
 
         log.info("User created: {} ", newUser);
         return new UserRegisterResponse(newUser.getUserId());
@@ -130,30 +145,28 @@ public class UserManagementService {
 
     // Update user
     // Return true if user was updated
-    public Boolean updateUser(UserRegisterRequest user, Integer userId) {
+    public Boolean updateUser(UserRegisterRequest user, Integer userId) throws UserNotFoundException {
         log.info("Updating user: {} ", user);
+
         Optional<User> userOptional = uRepository.findById(userId);
-        log.debug("User found: {} ", userOptional.isPresent());
+
         if (Boolean.FALSE.equals(userOptional.isPresent())) {
-            log.error("Error user not found: {} ", user);
-            return false;
+            throw new UserNotFoundException(UserNotFound_ERROR_MESSAGE);
         }
 
-        User newUser = userOptional.get();
-        newUser.setUsername(user.getUsername());
-        newUser.setName(user.getName());
+        User updatedUser = userOptional.get();
+        updatedUser.setUsername(user.getUsername());
+        updatedUser.setName(user.getName());
 
-        uRepository.save(newUser);
+        uRepository.save(updatedUser);
 
-        Optional<User> userOptional2 = uRepository.findById(userId);
         
-        // Check if user was updated
-        if (Boolean.FALSE.equals(userOptional2.isPresent())) {
-            log.error("Error updating user: {} ", user);
-            return false;
-        }
+        // TODO: Check if user was updated
+        // Optional<User> userOptional2 = uRepository.findById(userId);
 
-        log.info("User updated: {} ", newUser);
+
+        log.info("User updated: {} ", updatedUser);
+
         return true;
     }  
 
@@ -161,57 +174,72 @@ public class UserManagementService {
     // Delete wallet
     // Delete inventory
     // Return true if user, wallet and inventory was deleted 
-    public boolean deleteUser(Integer userId) {
-		Optional<User> u =uRepository.findByUserId(userId);
-		if( u.isPresent()){
-			uRepository.delete(u.get());
-            if(getUser(userId) != null)
-                return false;
-            
-            if(!walletAPI.deleteWallet(userId)){
-                log.error("Error deleting wallet: {} ", userId);
-                // rollback
-                uRepository.save(u.get());
-                return false;
-            }
-            log.info("Wallet deleted: {} ", userId);
-            if(!inventoryAPI.deleteInventory(userId)){
-                log.error("Error deleting inventory: {} ", userId);
-                // rollback
-                uRepository.save(u.get());
+    public boolean deleteUser(Integer userId) throws UserNotFoundException{
+        log.info("Deleting user: {} ", userId);
+
+		Optional<User> u = uRepository.findByUserId(userId);
+
+        if( Boolean.FALSE.equals(u.isPresent())){
+            throw new UserNotFoundException(UserNotFound_ERROR_MESSAGE);
+        }
+
+    
+        uRepository.delete(u.get());
+
+
+
+        if(getUser(userId) != null) return false;
+        
+        try {
+            walletAPI.deleteWallet(userId);
+        } catch (WalletNotFoundException e) {
+            log.error("Error deleting wallet: {} ", userId);
+            // rollback
+            uRepository.save(u.get());
+
+            this.checkRollbackUser(userId);
+
+            return false;
+        }
+
+        // log.info("Wallet deleted: {} ", userId);
+
+        if(Boolean.FALSE.equals(inventoryAPI.deleteInventory(userId))){
+            log.error("Error deleting inventory: {} ", userId);
+            // rollback
+            uRepository.save(u.get());
+
+            this.checkRollbackUser(userId);
+
+            try {
                 walletAPI.createWallet(new WalletOperationRequest(userId));
+            } catch (Exception e) {
+                log.error("Error creating wallet: {} ", userId);
                 return false;
-            }
-            log.info("Inventory deleted: {} ", userId);
-            log.info("User deleted: {} ", userId);
-			return getUser(userId) == null ;
-		}
-        log.error("Error deleting user {}. User seems no to exist.", userId);
-		return false;
+            } 
+
+            return false;
+        }
+        // log.info("Inventory deleted: {} ", userId);
+        log.info("User deleted: {} ", userId);
+        return true;
 	}
 
 
     // Get user by username
     // Return userdto
-    public UserDTO getUser(String username) {
-        Optional<User> uOptional = uRepository.findByUsername(username);
-        if (uOptional.isPresent()) {
-            User u=uOptional.get();
-            return userDTOMapper.apply(u);
-        } else {
-            return null;
-        }
+    public UserDTO getUser(String username) throws UserNotFoundException {
+        return uRepository.findByUsername(username).map(userDTOMapper).orElseThrow(
+            UserNotFoundException.of(UserNotFound_ERROR_MESSAGE)
+        );
     }
 
     // Get user by id
     // Return userdto
-    public UserDTO getUser(Integer user_id) {
-        Optional<User> uOptional = uRepository.findByUserId(user_id);
-        if (uOptional.isPresent()) {
-            return userDTOMapper.apply(uOptional.get());
-        } else {
-            return null;
-        }
+    public UserDTO getUser(Integer userId) throws UserNotFoundException {
+        return uRepository.findById(userId).map(userDTOMapper).orElseThrow(
+            UserNotFoundException.of(UserNotFound_ERROR_MESSAGE)
+        );
     }
 
     // Get all users
@@ -226,4 +254,13 @@ public class UserManagementService {
                     .map(userDTOMapper)
             .collect(Collectors.toList());
 	}
+
+    private void checkRollbackUser(Integer userId) {
+        try {
+            this.getUser(userId);
+            log.info("User rollbacked: {} ", userId);
+        } catch (UserNotFoundException e) {
+            log.error("Error rollbacking user: {} ", userId);
+        }
+    }
 }

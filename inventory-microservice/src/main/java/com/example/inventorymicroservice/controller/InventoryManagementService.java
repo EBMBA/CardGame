@@ -1,4 +1,5 @@
 package com.example.inventorymicroservice.controller;
+import com.example.common.Exception.UserNotFoundException;
 import com.example.common.api.CardAPI;
 import com.example.common.api.UserAPI;
 import com.example.common.model.*;
@@ -60,9 +61,13 @@ public class InventoryManagementService {
             CardDTO cardDTO = cardAPI.getCard(cardId);
             cards.add(cardDTO);
         }
-        UserDTO userDTO = userAPI.getUser(userid);
-
-        return new InventoryDTO(userDTO, cards);
+        try {
+            UserDTO userDTO = userAPI.getUser(userid);
+            return new InventoryDTO(userDTO, cards);
+        } catch (UserNotFoundException e) {
+            log.error("User not found for user id: {}", userid);
+            return null;
+        }
     }
 
     // This method will return the inventory of the user with the given id

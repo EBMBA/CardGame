@@ -1,5 +1,7 @@
 server:
   port: ${WALLET_MICROSERVICE_PORT}
+  error: 
+    include-message: always
 USER_SERVICE_URL: ${USER_MICROSERVICE_URL}
 
 ## FOR EMBEDED DB

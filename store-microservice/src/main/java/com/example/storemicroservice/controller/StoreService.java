@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.common.Exception.UserNotFoundException;
+import com.example.common.Exception.WalletNotFoundException;
 import com.example.common.api.CardAPI;
 import com.example.common.api.InventoryAPI;
 import com.example.common.api.UserAPI;
@@ -74,10 +76,10 @@ public class StoreService {
         log.info("Making a transaction on user {} to {} card : {} ", storeOperationRequest.getUser_id(),  storeOperationRequest.getTransaction(), storeOperationRequest.getCard_id());
         
         CardDTO card = cardAPI.getCard(Integer.valueOf(storeOperationRequest.getCard_id()));
-        UserDTO user = userAPI.getUser(Integer.valueOf(storeOperationRequest.getUser_id()));
-
-        // Check if user exist 
-        if (user == null) {
+        UserDTO user;
+        try {
+            user = userAPI.getUser(Integer.valueOf(storeOperationRequest.getUser_id()));
+        } catch (UserNotFoundException e) {
             log.error("User {} not found in the database", storeOperationRequest.getUser_id());
             return false;
         }
@@ -91,10 +93,16 @@ public class StoreService {
         // Do the money transaction
         Float walletTransactionAmount= storeOperationRequest.getTransaction() == TransactionType.BUY ? -card.getPrice() : card.getPrice(); 
         WalletTransactionRequest walletTransactionRequest =  new WalletTransactionRequest(walletTransactionAmount);
-        Boolean walletTransactionStatus = walletAPI.updateWallet(Integer.valueOf(user.getUser_id()), walletTransactionRequest);
+        Boolean walletTransactionStatus;
+        try {
+            walletTransactionStatus = walletAPI.updateWallet(Integer.valueOf(user.getUser_id()), walletTransactionRequest);
+        } catch (WalletNotFoundException e) {
+            log.error("Wallet not found for the user {} ", user.getUser_id());
+            return false;
+        }
 
 
-        if (!walletTransactionStatus) {
+        if (Boolean.FALSE.equals(walletTransactionStatus)) {
             log.error("Error in wallet transaction for the user {} ", user.getUser_id());
             return false;
         }
@@ -104,12 +112,17 @@ public class StoreService {
                 new InventoryOperationRequest(Integer.valueOf(card.getCard_id()), InventoryTransactionType.DELETE) ; 
         Boolean inventoryTransactionStatus = inventoryAPI.updateInventory(Integer.valueOf(user.getUser_id()), inventoryOperationRequest);
         
-        if(!inventoryTransactionStatus){
+        if(Boolean.FALSE.equals(inventoryTransactionStatus)){
             log.error("Error in inventory transaction for the user {} ", user.getUser_id());
             // Cancel the wallet transaction
             WalletTransactionRequest cancelWalletTransactionRequest = new WalletTransactionRequest(-1*walletTransactionAmount);
-            Boolean cancelWalletTransactionStatus = walletAPI.updateWallet(Integer.valueOf(user.getUser_id()), cancelWalletTransactionRequest);
-            if (!cancelWalletTransactionStatus) {
+            Boolean cancelWalletTransactionStatus = false;
+            try {
+                cancelWalletTransactionStatus = walletAPI.updateWallet(Integer.valueOf(user.getUser_id()), cancelWalletTransactionRequest);
+            } catch (WalletNotFoundException e) {
+                log.error("Wallet not found for the user {} ", user.getUser_id());
+            }
+            if (Boolean.FALSE.equals(cancelWalletTransactionStatus)) {
                 log.error("Error in wallet transaction cancel for the user {} ", user.getUser_id());
             }
             log.info("Transaction canceled for user {} to {} the card {}", user.getUser_id(), storeOperationRequest.getTransaction(), card.getCard_id());

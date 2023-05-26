@@ -1,5 +1,7 @@
 server:
   port: ${USER_MICROSERVICE_PORT}
+  error: 
+    include-message: always
 
 ## FOR EMBEDED DB
 spring:

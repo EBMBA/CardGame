@@ -23,6 +23,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.example.common.Exception.UserNotFoundException;
+import com.example.common.Exception.WalletNotFoundException;
 import com.example.common.api.CardAPI;
 import com.example.common.api.InventoryAPI;
 import com.example.common.api.UserAPI;
@@ -94,13 +96,21 @@ class StoreServiceTest {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1", "1", TransactionType.BUY);
 
 
-        when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(null);
+        try {
+            when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(null);
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+        }
         when(cardAPI.getCard(Mockito.any(Integer.class))).thenReturn(expectedCardDTO);
 
         Boolean result = storeService.doTransactionCard(operationRequest);
 
         assertFalse(result);
-        verify(walletAPI, never()).updateWallet(Mockito.any(Integer.class), Mockito.any(WalletTransactionRequest.class));
+        try {
+            verify(walletAPI, never()).updateWallet(Mockito.any(Integer.class), Mockito.any(WalletTransactionRequest.class));
+        } catch (WalletNotFoundException e) {
+            e.printStackTrace();
+        }
         verify(inventoryAPI, never()).updateInventory(Mockito.any(Integer.class), Mockito.any(InventoryOperationRequest.class));
     }
 
@@ -109,12 +119,20 @@ class StoreServiceTest {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1", "1", TransactionType.BUY);
     
         when(cardAPI.getCard(Mockito.any(Integer.class))).thenReturn(null);
-        when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(expectedUserDTO);
+        try {
+            when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(expectedUserDTO);
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+        }
 
         Boolean result = storeService.doTransactionCard(operationRequest);
 
         assertFalse(result);
-        verify(walletAPI, never()).updateWallet(Mockito.any(Integer.class), Mockito.any(WalletTransactionRequest.class));
+        try {
+            verify(walletAPI, never()).updateWallet(Mockito.any(Integer.class), Mockito.any(WalletTransactionRequest.class));
+        } catch (WalletNotFoundException e) {
+            e.printStackTrace();
+        }
         verify(inventoryAPI, never()).updateInventory(Mockito.any(Integer.class), Mockito.any(InventoryOperationRequest.class));
     }
 
@@ -123,8 +141,16 @@ class StoreServiceTest {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1", "1", TransactionType.BUY);
         expectedCardDTO.setPrice(1000000.0f);
         when(cardAPI.getCard(Mockito.any(Integer.class))).thenReturn(expectedCardDTO);
-        when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(expectedUserDTO);
-        when(walletAPI.updateWallet(Mockito.any(Integer.class), Mockito.any(WalletTransactionRequest.class))).thenReturn(false);
+        try {
+            when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(expectedUserDTO);
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            when(walletAPI.updateWallet(Mockito.any(Integer.class), Mockito.any(WalletTransactionRequest.class))).thenReturn(false);
+        } catch (WalletNotFoundException e) {
+            e.printStackTrace();
+        }
 
 
         Boolean result = storeService.doTransactionCard(operationRequest);
@@ -137,8 +163,16 @@ class StoreServiceTest {
     void testDoTransactionCard_UserHasEnoughMoney_UserHasCard_ReturnsFalse() throws RestClientException, URISyntaxException {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1", "1", TransactionType.BUY);
         when(cardAPI.getCard(Mockito.any(Integer.class))).thenReturn(expectedCardDTO);
-        when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(expectedUserDTO);
-        when(walletAPI.updateWallet(Mockito.any(Integer.class), Mockito.any(WalletTransactionRequest.class))).thenReturn(true);
+        try {
+            when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(expectedUserDTO);
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            when(walletAPI.updateWallet(Mockito.any(Integer.class), Mockito.any(WalletTransactionRequest.class))).thenReturn(true);
+        } catch (WalletNotFoundException e) {
+            e.printStackTrace();
+        }
         when(inventoryAPI.updateInventory(Mockito.any(Integer.class), Mockito.any(InventoryOperationRequest.class))).thenReturn(false);
         
         Boolean result = storeService.doTransactionCard(operationRequest);
@@ -150,8 +184,16 @@ class StoreServiceTest {
     void testDoTransactionCard_UserHasEnoughMoney_UserHasNotCard_ReturnsTrue() throws RestClientException, URISyntaxException {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1", "1", TransactionType.BUY);
         when(cardAPI.getCard(Mockito.any(Integer.class))).thenReturn(expectedCardDTO);
-        when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(expectedUserDTO);
-        when(walletAPI.updateWallet(Mockito.any(Integer.class), Mockito.any(WalletTransactionRequest.class))).thenReturn(true);
+        try {
+            when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(expectedUserDTO);
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            when(walletAPI.updateWallet(Mockito.any(Integer.class), Mockito.any(WalletTransactionRequest.class))).thenReturn(true);
+        } catch (WalletNotFoundException e) {
+            e.printStackTrace();
+        }
         when(inventoryAPI.updateInventory(Mockito.any(Integer.class), Mockito.any(InventoryOperationRequest.class))).thenReturn(true);
         
         Boolean result = storeService.doTransactionCard(operationRequest);

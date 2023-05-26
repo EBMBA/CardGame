@@ -1,5 +1,6 @@
 package com.example.game.controller;
 
+import com.example.common.Exception.WalletNotFoundException;
 import com.example.common.api.AuthAPI;
 import com.example.common.api.CardAPI;
 import com.example.common.api.InventoryAPI;
@@ -246,16 +247,13 @@ public class GameService {
     // This method is used to update the wallet of a player
     private boolean setWallet(Integer userId, Integer amount) {
         WalletTransactionRequest walletTransactionRequest =  new WalletTransactionRequest(amount.floatValue());
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
 
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-        // String url = WALLET_SERVICE_URL + "/" + userId;
-        // restTemplate.put(url, walletTransactionRequest, WalletTransactionRequest.class);
-
-        walletAPI.updateWallet(userId, walletTransactionRequest);
+        try {
+            walletAPI.updateWallet(userId, walletTransactionRequest);
+        } catch (WalletNotFoundException e) {
+            log.error("Wallet not found");
+            return false;
+        }
         
         return true;
     }
@@ -305,7 +303,7 @@ public class GameService {
                 {1, 1, 1, 1, 1, 2, 1.0/2, 1, 1, 1, 1, 1, 1, 1, 2, 1.0/2, 1, 1},
                 {1, 1.0/2, 1, 1, 1, 1, 2, 1, 1.0/2, 1, 1, 1, 1, 1, 2, 1, 1.0/2, 1}
         };
-        System.out.println("Affinity matrix: " + affinityMatrix[index1][index2]);
+        log.info("Affinity matrix: " + affinityMatrix[index1][index2]);
         log.info("Affinity {} - {} vs {} - {} = {}", affinity1,  index1,affinity2, index2, affinityMatrix[index1][index2]);
         return affinityMatrix[index1][index2];
     }

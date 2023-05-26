@@ -1,10 +1,10 @@
 version: "3.1"
 services:
   wallet-microservice:
-    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:WALLET
-    # build: 
-    #   dockerfile: ./wallet-microservice/Dockerfile
-    #   context: .
+    # image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:WALLET
+    build: 
+      dockerfile: ./wallet-microservice/Dockerfile
+      context: .
     restart: always
     ports:
       - 8080:8080
@@ -21,10 +21,10 @@ services:
     environment:
       USER_SERVICE_URL: http://user-microservice:8087/api/users
   user-microservice:
-    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:USER
-    # build: 
-    #   dockerfile: ./user-microservice/Dockerfile
-    #   context: .
+    # image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:USER
+    build: 
+      dockerfile: ./user-microservice/Dockerfile
+      context: .
     restart: always
     ports:
       - 8087:8087
@@ -42,10 +42,10 @@ services:
       WALLET_SERVICE_URL: http://wallet-microservice:8080/api/wallets
       INVENTORY_SERVICE_URL: http://inventory-microservice:8084/api/inventories
   card-microservice:
-    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:CARD
-    # build: 
-    #   dockerfile: ./card-microservice/Dockerfile
-    #   context: .
+    # image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:CARD
+    build: 
+      dockerfile: ./card-microservice/Dockerfile
+      context: .
     restart: always
     labels:
     - "traefik.enable=true"
@@ -60,10 +60,10 @@ services:
     ports:
       - 8085:8085
   auth-microservice:
-    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:AUTH
-    # build:
-    #   dockerfile : ./auth-microservice/Dockerfile
-    #   context: .
+    # image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:AUTH
+    build:
+      dockerfile : ./auth-microservice/Dockerfile
+      context: .
     restart: always
     ports:
       - 8086:8086
@@ -74,10 +74,10 @@ services:
     environment:
       USER_SERVICE_URL: http://user-microservice:8087/api/users
   inventory-microservice:
-    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:INVENTORY
-    # build: 
-    #   dockerfile: ./inventory-microservice/Dockerfile
-    #   context: .
+    # image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:INVENTORY
+    build: 
+      dockerfile: ./inventory-microservice/Dockerfile
+      context: .
     restart: always
     ports:
       - 8084:8084
@@ -95,10 +95,10 @@ services:
       USER_SERVICE_URL: http://user-microservice:8087/api/users
       CARD_SERVICE_URL: http://card-microservice:8085/api/cards
   store-microservice:
-    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:STORE
-    # build:
-    #   dockerfile: ./store-microservice/Dockerfile
-    #   context: .
+    # image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:STORE
+    build:
+      dockerfile: ./store-microservice/Dockerfile
+      context: .
     restart: always
     ports:
       - 8082:8082
@@ -119,10 +119,10 @@ services:
       CARD_SERVICE_URL: http://card-microservice:8085/api/cards
 
   frontend:
-    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:FRONT
-    # build: 
-    #   dockerfile: ./frontend/Dockerfile
-    #   context: .
+    # image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:FRONT
+    build: 
+      dockerfile: ./frontend/Dockerfile
+      context: .
     restart: always
     labels:
     - "traefik.enable=true"
@@ -131,10 +131,10 @@ services:
     -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
 
   game-microservice:
-    image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:GAME
-    # build:
-    #   dockerfile: ./game-microservice/Dockerfile
-    #   context: .
+    # image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:GAME
+    build:
+      dockerfile: ./game-microservice/Dockerfile
+      context: .
     restart: always
     ports:
       - 8083:8083
