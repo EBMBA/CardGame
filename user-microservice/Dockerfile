@@ -10,6 +10,11 @@ FROM --platform=linux/amd64 gcr.io/distroless/java
 ENV USER_MICROSERVICE_PORT=8087
 ENV WALLET_SERVICE_URL=http://host.docker.internal:8080/api/wallets
 ENV INVENTORY_SERVICE_URL=http://host.docker.internal:8084/api/inventories
+ENV JDBC_URL=localhost
+ENV JDBC_USER=postgres
+ENV JDBC_PASSWORD=postgres
+ENV JDBC_DATABASE=cardgame
+ENV JDBC_PORT=5432
 COPY --from=build /usr/src/app/target/user-microservice-0.0.1-SNAPSHOT.jar /usr/app/user-microservice-0.0.1-SNAPSHOT.jar  
 EXPOSE 8087
 ENTRYPOINT ["java","-jar","/usr/app/user-microservice-0.0.1-SNAPSHOT.jar"]

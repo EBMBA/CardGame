@@ -18,7 +18,14 @@ services:
     - "traefik.http.middlewares.jwtAuth.forwardauth.authRequestHeaders=Authorization"
     - "traefik.http.routers.wallet-microservice.middlewares=jwtAuth@docker"
     -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
+    depends_on:
+      - db1
     environment:
+      JDBC_URL: db1
+      JDBC_USER: postgres
+      JDBC_PASSWORD: postgres
+      JDBC_DATABASE: cardgame
+      JDBC_PORT: 5432 
       USER_SERVICE_URL: http://user-microservice:8087/api/users
   user-microservice:
     # image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:USER
@@ -38,7 +45,14 @@ services:
     - "traefik.http.middlewares.jwtAuth.forwardauth.authRequestHeaders=Authorization"
     - "traefik.http.routers.user-microservice.middlewares=jwtAuth@docker"
     -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
+    depends_on:
+      - db1
     environment:
+      JDBC_URL: db1
+      JDBC_USER: postgres
+      JDBC_PASSWORD: postgres
+      JDBC_DATABASE: cardgame
+      JDBC_PORT: 5432 
       WALLET_SERVICE_URL: http://wallet-microservice:8080/api/wallets
       INVENTORY_SERVICE_URL: http://inventory-microservice:8084/api/inventories
   card-microservice:
@@ -47,6 +61,14 @@ services:
       dockerfile: ./card-microservice/Dockerfile
       context: .
     restart: always
+    depends_on:
+      - db1
+    environment:
+      JDBC_URL: db1
+      JDBC_USER: postgres
+      JDBC_PASSWORD: postgres
+      JDBC_DATABASE: cardgame
+      JDBC_PORT: 5432 
     labels:
     - "traefik.enable=true"
     - "traefik.http.routers.card-microservice.rule=(Host(`localhost`) || Host(`127.0.0.1.nip.io`)) && PathPrefix(`/api/cards`)"
@@ -91,7 +113,14 @@ services:
     - "traefik.http.middlewares.jwtAuth.forwardauth.authRequestHeaders=Authorization"
     - "traefik.http.routers.inventory-microservice.middlewares=jwtAuth@docker"
     -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
+    depends_on:
+      - db1
     environment:
+      JDBC_URL: db1
+      JDBC_USER: postgres
+      JDBC_PASSWORD: postgres
+      JDBC_DATABASE: cardgame
+      JDBC_PORT: 5432 
       USER_SERVICE_URL: http://user-microservice:8087/api/users
       CARD_SERVICE_URL: http://card-microservice:8085/api/cards
   store-microservice:
@@ -117,7 +146,6 @@ services:
       INVENTORY_SERVICE_URL: http://inventory-microservice:8084/api/inventories
       WALLET_SERVICE_URL: http://wallet-microservice:8080/api/wallets
       CARD_SERVICE_URL: http://card-microservice:8085/api/cards
-
   frontend:
     # image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:FRONT
     build: 
@@ -129,7 +157,6 @@ services:
     - "traefik.http.routers.frontend.rule=Host(`127.0.0.1.nip.io`)"
     - "traefik.http.services.frontend.loadbalancer.server.port=80"
     -  "traefik.http.middlewares.cors-header.headers.customResponseHeaders.access-control-allow-origin:*"
-
   game-microservice:
     # image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3:GAME
     build:
@@ -155,7 +182,17 @@ services:
       CARD_SERVICE_URL: http://card-microservice:8085/api/cards
       STORE_SERVICE_URL: http://store-microservice:8082/api/store
       AUTH_SERVICE_URL: http://auth-microservice:8086/api/auth
-
+  db1:
+    image: postgres:13.3
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cardgame
+    ports:
+      - 5432:5432
+    # volumes:
+    #   - ./postgres-data:/var/lib/postgresql/data
   reverse-proxy:
     image: registry.gitlab.com/cpelyon/4ics-2022-2023/grp7-atelier_3/traefik:v2.10
     container_name: "traefik"

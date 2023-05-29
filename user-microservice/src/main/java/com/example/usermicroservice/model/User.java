@@ -23,7 +23,7 @@ import lombok.Setter;
 public class User implements Serializable{
     
     @Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_generator")
+	  @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_generator")
     @SequenceGenerator(name = "user_generator", initialValue = 6)
     private Integer userId;
     private String username;

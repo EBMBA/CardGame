@@ -1,5 +1,7 @@
 package com.example.cardmicroservice.Repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
@@ -22,10 +24,11 @@ class CardRepositoryTest {
 
     @Test
     void testFindByName() {
-        Card card = new Card(1, "mock", "mock", "mock", "mock", "mock", "mock", "mock", "mock", "mock", 200f);
+        Card card = new Card(0, "mock", "mock", "mock", "mock", "mock", "mock", "mock", "mock", "mock", 200f);
         cRepository.save(card);
         Optional<Card> cardE = cRepository.findByName("mock");
-        assert(cardE.get().getCardId() == 1);
+        System.out.println(cardE.get().toString());
+        assertEquals(151,cardE.get().getCardId());
     } 
     
 }

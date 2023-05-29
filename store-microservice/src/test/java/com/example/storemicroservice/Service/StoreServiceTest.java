@@ -92,15 +92,11 @@ class StoreServiceTest {
     }
 
     @Test
-    void testDoTransactionCard_UserNotFound_ReturnsFalse() throws RestClientException, URISyntaxException {
+    void testDoTransactionCard_UserNotFound_ReturnsFalse() throws RestClientException, URISyntaxException, UserNotFoundException {
         StoreOperationRequest operationRequest = new StoreOperationRequest("1", "1", TransactionType.BUY);
 
-
-        try {
-            when(userAPI.getUser(Mockito.any(Integer.class))).thenReturn(null);
-        } catch (UserNotFoundException e) {
-            e.printStackTrace();
-        }
+        when(userAPI.getUser(Mockito.any(Integer.class))).thenThrow(new UserNotFoundException("User not found"));
+        
         when(cardAPI.getCard(Mockito.any(Integer.class))).thenReturn(expectedCardDTO);
 
         Boolean result = storeService.doTransactionCard(operationRequest);

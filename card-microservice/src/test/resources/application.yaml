@@ -2,25 +2,38 @@ server:
   port: 8080
 
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: create
-    defer-datasource-initialization: true
-    database-platform: org.hibernate.dialect.H2Dialect
   datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
     username: sa
     password: password
-  h2:
-    console:
-      enable: true
+    # initialization-mode: never
+  # Override pour format H2
+  sql:
+    init:
+      mode: never
+      # schema-locations:
+      #   - classpath:schema-h2.sql
 
-jdbc:
-  url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;NON_KEYWORDS=KEY,VALUE
-  username: sa
-  password: password
-  driver-class-name: org.h2.Driver
+  # jpa:
+  #   hibernate:
+  #     ddl-auto: none
+  #   defer-datasource-initialization: true
+  #   database-platform: org.hibernate.dialect.H2Dialect
+#   datasource:
+#     username: sa
+#     password: password
+#   h2:
+#     console:
+#       enable: true
 
-hibernate:
-    dialect: org.hibernate.dialect.H2Dialect
-    hbm2ddl:
-      auto: create
+# jdbc:
+#   url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;NON_KEYWORDS=KEY,VALUE
+#   username: sa
+#   password: password
+#   driver-class-name: org.h2.Driver
+
+# hibernate:
+#     dialect: org.hibernate.dialect.H2Dialect
+#     hbm2ddl:
+#       auto: create

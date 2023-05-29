@@ -2,14 +2,36 @@ server:
   port: ${CARD_MICROSERVICE_PORT}
 
 spring:
+  # jpa:
+  #   hibernate:
+  #     ddl-auto: update # TODO: change when in production to none and set up liquibase
+  #   database-platform: org.hibernate.dialect.PostgreSQLDialect
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
+    generate-ddl: true
     defer-datasource-initialization: true
-    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: public
   datasource:
-    username: sa
-    password: password
-  h2:
-    console:
-      enable: true
+    url: jdbc:postgresql://${JDBC_URL:localhost}:${JDBC_PORT:5432}/${JDBC_DATABASE:cardgame}
+    username: ${JDBC_USER:postgres}
+    password: ${JDBC_PASSWORD:postgres}
+
+  sql:
+    init:
+      mode: always
+
+  # jpa:
+  #   hibernate:
+  #     ddl-auto: create
+  #   defer-datasource-initialization: true
+  #   database-platform: org.hibernate.dialect.H2Dialect
+  # datasource:
+  #   username: sa
+  #   password: password
+  # h2:
+  #   console:
+  #     enable: true

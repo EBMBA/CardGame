@@ -18,14 +18,3 @@ spring:
   h2:
     console:
       enable: true
-
-jdbc:
-  url: jdbc:h2:mem:testdb2;DB_CLOSE_DELAY=-1;NON_KEYWORDS=KEY,VALUE
-  username: sa
-  password: password
-  driver-class-name: org.h2.Driver
-
-hibernate:
-    dialect: org.hibernate.dialect.H2Dialect
-    hbm2ddl:
-      auto: create

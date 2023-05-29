@@ -1,0 +1,2 @@
+-- CREATE SEQUENCE IF NOT EXISTS "card_generator" START WITH 151
+DROP SEQUENCE IF EXISTS "card_generator";

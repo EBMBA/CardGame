@@ -39,7 +39,7 @@ public class Wallet implements Serializable{
 
     // @OneToOne(fetch = FetchType.EAGER, optional = false)
     // @JoinColumn(name = "user_id", nullable = false)
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private Integer userId;
     // Anotation unqiue in database 
   
